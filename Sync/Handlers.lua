@@ -524,34 +524,28 @@ DoF.Sync.Handlers = {
         DoF.Combat.TankShredTracker[tankName][guid] = count > 0 and count or nil
     end,
     
-    COMBATLOG = function(self, args, sender)
-        -- Игнорируем свои сообщения - мы уже добавили их в BroadcastCombatLog
+    -- Журнал в виде «ключ локали + аргументы»: текст собирается здесь, из
+    -- локали ПОЛУЧАТЕЛЯ. Благодаря этому каждый читает бой на своём языке.
+    COMBATLOG2 = function(self, args, sender)
+        -- Игнорируем свои сообщения — их уже добавил BroadcastCombatLogKey
         if sender == UnitName("player") then return end
         if not DoF.CombatLog then return end
+        if self:IsDuplicateLogEntry(sender, args) then return end
 
-        -- Дедупликация по содержимому в окне 3с: если тот же sender прислал
-        -- ту же строку дважды (повторный BroadcastCombatLog, отражение через
-        -- RELIABLE retry или просто дубль от системы), пишем в лог один раз.
-        -- Старая логика дедупила только по sender — конфликтные дубли проходили.
-        if not self._combatLogDedup then self._combatLogDedup = {} end
-        local now = GetTime()
-        local key = sender .. "|" .. args
-        local lastSeen = self._combatLogDedup[key]
-        if lastSeen and (now - lastSeen) < 3 then
-            return
-        end
-        self._combatLogDedup[key] = now
-        -- Ленивая чистка устаревших записей, чтобы таблица не росла без границ
-        if now - (self._combatLogDedupLastCleanup or 0) > 30 then
-            self._combatLogDedupLastCleanup = now
-            for k, t in pairs(self._combatLogDedup) do
-                if now - t > 3 then self._combatLogDedup[k] = nil end
-            end
-        end
+        DoF.CombatLog:Add(self:BuildCombatLogLine(args), sender)
+    end,
+
+    -- Готовый текст: клиенты старых версий и немногие места, где строка
+    -- собирается динамически и ключа у неё нет. Такие записи остаются на
+    -- языке отправителя — иначе их не перевести.
+    COMBATLOG = function(self, args, sender)
+        if sender == UnitName("player") then return end
+        if not DoF.CombatLog then return end
+        if self:IsDuplicateLogEntry(sender, args) then return end
 
         DoF.CombatLog:Add(args, sender)
     end,
-    
+
     PLAYERHPCHANGE = function(self, args, sender)
         local playerName, oldHP, newHP = args:match("([^;]+);([^;]+);([^;]+)")
         if playerName and self:IsMaster() and playerName ~= UnitName("player") then

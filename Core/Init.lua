@@ -1235,7 +1235,7 @@ SlashCmdList["DOFBUFF"] = function(msg)
     DoF.Effects:Apply("player", target, effectId, value, rounds, DoF.L["combat.label.gm"])
     DoF.Effects:BroadcastAllEffects()
     DoF.Utils:Info(DoF.Locale:Format("core.cmd.buff_applied", def.name, target))
-    DoF.Sync:BroadcastCombatLog(DoF.Locale:Format("core.cmd.master_applies_log", def.name, target, value, rounds))
+    DoF.Sync:BroadcastCombatLogKey("core.cmd.master_applies_log", DoF.Sync.Arg.effect(effectId), target, value, rounds)
 end
 
 -- Наложить дебафф на игрока
@@ -1267,7 +1267,7 @@ SlashCmdList["DOFDEBUFF"] = function(msg)
     DoF.Effects:Apply("player", target, effectId, value, rounds, DoF.L["combat.label.gm"])
     DoF.Effects:BroadcastAllEffects()
     DoF.Utils:Info(DoF.Locale:Format("core.cmd.debuff_applied", def.name, target))
-    DoF.Sync:BroadcastCombatLog(DoF.Locale:Format("core.cmd.master_applies_log", def.name, target, value, rounds))
+    DoF.Sync:BroadcastCombatLogKey("core.cmd.master_applies_log", DoF.Sync.Arg.effect(effectId), target, value, rounds)
 end
 
 -- Наложить эффект на НПЦ (по цели в игре)
@@ -1309,7 +1309,7 @@ SlashCmdList["DOFNPCEFFECT"] = function(msg)
     DoF.Effects:BroadcastAllEffects()
     local npcName = npcData.name or DoF.L["combat.npc_fallback"]
     DoF.Utils:Info(DoF.Locale:Format("core.cmd.effect_applied", def.name, npcName))
-    DoF.Sync:BroadcastCombatLog(DoF.Locale:Format("core.cmd.master_applies_log", def.name, npcName, value, rounds))
+    DoF.Sync:BroadcastCombatLogKey("core.cmd.master_applies_log", DoF.Sync.Arg.effect(effectId), npcName, value, rounds)
 end
 
 -- Быстро оглушить НПЦ
@@ -1336,7 +1336,7 @@ SlashCmdList["DOFNPCSTUN"] = function(msg)
     DoF.Effects:BroadcastAllEffects()
     local npcName = npcData.name or DoF.L["combat.npc_fallback"]
     DoF.Utils:Info(DoF.Locale:Format("core.cmd.npc_stunned", npcName, rounds))
-    DoF.Sync:BroadcastCombatLog(DoF.Locale:Format("core.cmd.npc_stunned_log", npcName, rounds))
+    DoF.Sync:BroadcastCombatLogKey("core.cmd.npc_stunned_log", npcName, rounds)
 end
 
 -- ═══════════════════════════════════════════════════════════

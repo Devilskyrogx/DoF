@@ -864,8 +864,8 @@ function DoF.Effects:Apply(targetType, targetId, effectId, value, duration, cast
     -- Лог в бой (броадкаст всем)
     local targetName = targetType == "npc" and (DoF.Units:Get(targetId) and DoF.Units:Get(targetId).name or "NPC") or targetId
     if DoF.Sync then
-        DoF.Sync:BroadcastCombatLog(string.format(DoF.L["effects.msg.applies"],
-            casterName, def.name, targetName))
+        DoF.Sync:BroadcastCombatLogKey("effects.msg.applies",
+            casterName, DoF.Sync.Arg.effect(effectId), targetName)
     end
 
     -- Отправляем синхронизацию
@@ -1026,8 +1026,8 @@ function DoF.Effects:PlayerApplyAoE(targetName, effectId)
         DoF.Utils:Color("FFFFFF", targetName)))
     
     if DoF.Sync then
-        DoF.Sync:BroadcastCombatLog(string.format(DoF.L["effects.msg.applies_aoe"],
-            casterName, def.name, targetName))
+        DoF.Sync:BroadcastCombatLogKey("effects.msg.applies_aoe",
+            casterName, DoF.Sync.Arg.effect(effectId), targetName)
     end
     
     -- Синхронизация
@@ -1137,10 +1137,12 @@ function DoF.Effects:PlayerApplyWeaken(npcGuid, effectId, value, duration)
         -- Броадкастим в журнал боя
         local npcData = DoF.Units:Get(npcGuid)
         local targetName = npcData and npcData.name or "NPC"
-        local logMessage = string.format(DoF.L["effects.msg.applies_weakness"],
-            casterName, self:GetColorHex(def.color), def.name, value, targetName, duration)
         if DoF.Sync then
-            DoF.Sync:BroadcastCombatLog(logMessage)
+            -- Цвет — отдельный аргумент самой строки (|cFF%s%s|r), поэтому
+            -- название эффекта передаём без покраски.
+            DoF.Sync:BroadcastCombatLogKey("effects.msg.applies_weakness",
+                casterName, self:GetColorHex(def.color),
+                DoF.Sync.Arg.effect(effectId, ""), value, targetName, duration)
         end
         
         -- Оповещаем пошаговую систему
@@ -1233,9 +1235,9 @@ function DoF.Effects:ProcessRound(targetType, targetId)
             effectData.pendingActivation = false
             local targetName = targetType == "npc" and (DoF.Units:Get(targetId) and DoF.Units:Get(targetId).name or "NPC") or targetId
             if DoF.Sync then
-                DoF.Sync:BroadcastCombatLog(string_format(DoF.L["effects.msg.starts_on"],
-                    DoF.Utils:Color(self:GetColorHex(def.color), def.name),
-                    DoF.Utils:Color("FFFFFF", targetName)))
+                DoF.Sync:BroadcastCombatLogKey("effects.msg.starts_on",
+                    DoF.Sync.Arg.effect(effectId),
+                    DoF.Sync.Arg.color("FFFFFF", targetName))
             end
         else
             -- Применяем эффект раунда (только фиксированный урон без модификаторов)
@@ -1369,8 +1371,7 @@ function DoF.Effects:ApplyDamage(targetType, targetId, damage, sourceName)
             if actualDamage > 0 then
                 DoF.Units:ModifyHP(targetId, newHP)
                 if DoF.Sync then
-                    DoF.Sync:BroadcastCombatLog(string.format(DoF.L["effects.msg.dot_damage_hp"],
-                        npc.name, actualDamage, sourceName, newHP, npc.maxHp))
+                    DoF.Sync:BroadcastCombatLogKey("effects.msg.dot_damage_hp", npc.name, actualDamage, sourceName, newHP, npc.maxHp)
                 end
             end
         end
@@ -1378,8 +1379,7 @@ function DoF.Effects:ApplyDamage(targetType, targetId, damage, sourceName)
         -- Игрок: мастер синхронизирует через ModifyPlayerHP (обрабатывает и локальное применение)
         if DoF.Sync:IsMaster() then
             DoF.Sync:ModifyPlayerHP(targetId, -damage)
-            DoF.Sync:BroadcastCombatLog(string.format(DoF.L["effects.msg.dot_damage"],
-                targetId, damage, sourceName))
+            DoF.Sync:BroadcastCombatLogKey("effects.msg.dot_damage", targetId, damage, sourceName)
         elseif targetId == UnitName("player") then
             -- Не мастер, но цель — текущий игрок (fallback)
             DoF.Stats:ModifyHP(-damage)
@@ -1392,8 +1392,7 @@ function DoF.Effects:ApplyHealing(targetType, targetId, amount)
         -- Мастер синхронизирует через ModifyPlayerHP (обрабатывает и локальное применение)
         if DoF.Sync:IsMaster() then
             DoF.Sync:ModifyPlayerHP(targetId, amount)
-            DoF.Sync:BroadcastCombatLog(string.format(DoF.L["effects.msg.hot_heal"],
-                targetId, amount))
+            DoF.Sync:BroadcastCombatLogKey("effects.msg.hot_heal", targetId, amount)
         elseif targetId == UnitName("player") then
             -- Не мастер, но цель — текущий игрок (fallback)
             DoF.Stats:ModifyHP(amount)
@@ -1652,7 +1651,7 @@ function DoF.Effects:Dispel(targetName, casterRole, skipChecks)
         end
         DoF.Utils:Info(DoF.Locale:Format("effects.msg.debuff_removed", DoF.Utils:Color("FFFFFF", targetName)))
         if DoF.Sync then
-            DoF.Sync:BroadcastCombatLog(DoF.Locale:Format("effects.msg.debuff_removed_log", UnitName("player"), targetName))
+            DoF.Sync:BroadcastCombatLogKey("effects.msg.debuff_removed_log", UnitName("player"), targetName)
         end
         -- OnActionPerformed вызывается в Combat:DispelTarget(), не здесь
         return true

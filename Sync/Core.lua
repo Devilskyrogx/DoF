@@ -42,7 +42,7 @@ local COMMAND_PRIORITY = {
     UNIT = "ALERT", HPCHANGE = "ALERT", REMOVE = "ALERT",
     NPC_SHIELD = "ALERT", ADAPT = "ALERT", REQUEST_UNIT = "ALERT",
     -- BULK: фоновые данные (можно задержать без последствий)
-    PLAYERDATA = "BULK", PLAYERHP = "BULK", COMBATLOG = "BULK",
+    PLAYERDATA = "BULK", PLAYERHP = "BULK", COMBATLOG = "BULK", COMBATLOG2 = "BULK",
     FULLDATA = "BULK", FULLDATA3 = "BULK",
 }
 
@@ -716,13 +716,263 @@ function DoF.Sync:RequestMissingPlayerData()
     end
 end
 
-function DoF.Sync:BroadcastCombatLog(text)
+-- ═══════════════════════════════════════════════════════════
+-- БОЕВОЙ ЖУРНАЛ: перевод на стороне получателя
+-- ═══════════════════════════════════════════════════════════
+--
+-- Раньше отправитель собирал готовую строку и слал её текстом — получатель
+-- видел журнал на языке ОТПРАВИТЕЛЯ. Теперь по сети едут ключ локали и
+-- аргументы, а текст собирает каждый клиент из своей локали.
+--
+-- Сложность в том, что аргументы тоже бывают переведёнными: название
+-- характеристики, слово «успех», имя роли или эффекта. Поэтому каждый
+-- аргумент едет со своим видом, и получатель знает, что с ним делать:
+--
+--   Arg.text(v)          имя игрока, число, имя NPC — как есть
+--   Arg.key(k, color)    произвольный ключ локали
+--   Arg.stat(id)         характеристика: имя и цвет из таблиц получателя
+--   Arg.role(id)         роль: имя и цвет оттуда же
+--   Arg.effect(id)       эффект: имя из справочника получателя
+--   Arg.color(c, v)      обычное значение, но покрашенное
+--
+-- Одна запись журнала часто склеена из нескольких кусков: «кто кого атакует» +
+-- «результат броска» + «урон». Каждый кусок — свой ключ локали, поэтому запись
+-- едет как последовательность сегментов.
+--
+-- Формат провода: COMBATLOG2:<сегмент>~<сегмент>~...
+--   <сегмент> = <ключ>;<арг>;<арг>;...
+--   <арг>     = <вид>:<цвет|->:<значение>
+-- В значениях '%', ';' и '~' escape-ятся процентным кодированием: описание
+-- особого действия — свободный текст игрока и может содержать что угодно.
+
+local LOG_ARG_SEP = ";"
+local LOG_SEG_SEP = "~"
+
+local function LogEncodeValue(v)
+    v = tostring(v == nil and "" or v)
+    -- Порядок важен: сначала '%', иначе перекодируем собственные escape-ы.
+    v = v:gsub("%%", "%%25")
+    v = v:gsub(";", "%%3B")
+    v = v:gsub("~", "%%7E")
+    v = v:gsub(",", "%%2C")
+    return v
+end
+
+local function LogDecodeValue(v)
+    v = v:gsub("%%2C", ",")
+    v = v:gsub("%%7E", "~")
+    v = v:gsub("%%3B", ";")
+    v = v:gsub("%%25", "%%")
+    return v
+end
+
+-- Конструкторы аргументов. Возвращают строку провода, а не текст: собрать
+-- текст может только получатель, у него своя локаль.
+DoF.Sync.Arg = {}
+local Arg = DoF.Sync.Arg
+
+function Arg.text(v)          return "t:-:" .. LogEncodeValue(v) end
+function Arg.color(color, v)  return "t:" .. (color or "-") .. ":" .. LogEncodeValue(v) end
+function Arg.key(k, color)    return "k:" .. (color or "-") .. ":" .. LogEncodeValue(k) end
+-- Ключ, у которого есть собственные аргументы: «бонусный урон +3» — это
+-- отдельная переводимая фраза с числом внутри, вложенная в другую фразу.
+function Arg.keyf(k, color, ...)
+    local parts = { LogEncodeValue(k) }
+    for i = 1, select("#", ...) do
+        parts[i + 1] = LogEncodeValue((select(i, ...)))
+    end
+    return "f:" .. (color or "-") .. ":" .. table.concat(parts, ",")
+end
+
+-- У stat/role/effect цвет по умолчанию берётся из таблиц получателя.
+-- Явная пустая строка означает «не красить» — нужно, когда кусок уже покрашен
+-- снаружи: вложенный |r иначе обрывает внешний цвет на середине строки.
+function Arg.stat(id, color)  return "s:" .. (color or "-") .. ":" .. LogEncodeValue(id) end
+function Arg.role(id, color)  return "r:" .. (color or "-") .. ":" .. LogEncodeValue(id) end
+-- color:
+--   не указан — берётся цвет из определения эффекта
+--   ""        — без покраски; нужно, когда весь кусок уже покрашен снаружи,
+--               иначе вложенный |r обрывает внешний цвет на середине строки
+function Arg.effect(id, color) return "e:" .. (color or "-") .. ":" .. LogEncodeValue(id) end
+
+-- Разворачивает один аргумент в текст на языке ПОЛУЧАТЕЛЯ.
+local function LogResolveArg(spec)
+    local kind, color, value = spec:match("^(%a):([^:]*):(.*)$")
+    if not kind then
+        -- Не наш формат — показываем как есть, лучше кривая строка, чем дыра.
+        return LogDecodeValue(spec)
+    end
+    value = LogDecodeValue(value)
+
+    local text
+    if kind == "k" then
+        text = DoF.Locale:Get(value)
+    elseif kind == "f" then
+        -- Вложенная фраза со своими аргументами: "key,arg1,arg2".
+        -- Значение уже раскодировано целиком, поэтому режем по ',' до decode
+        -- отдельных частей — сами части свои запятые экранировали.
+        local parts = {}
+        for piece in spec:match("^%a:[^:]*:(.*)$"):gmatch("[^,]+") do
+            parts[#parts + 1] = LogDecodeValue(piece)
+        end
+        local nestedKey = table.remove(parts, 1)
+        local ok, rendered = pcall(string.format, DoF.Locale:Get(nestedKey), unpack(parts))
+        text = ok and rendered or DoF.Locale:Get(nestedKey)
+    elseif kind == "s" then
+        text = DoF.Config.StatNames[value] or value
+        if color == "-" then color = DoF.Config.StatColors[value] end
+    elseif kind == "r" then
+        local role = DoF.Config.Roles[value]
+        text = role and role.name or value
+        if color == "-" then color = role and role.color end
+    elseif kind == "e" then
+        local def = DoF.Effects and DoF.Effects.Definitions[value]
+        text = def and def.name or value
+        -- Цвет эффекта — тоже свойство определения, берём его у себя.
+        if color == "-" and def and def.color and DoF.Effects.GetColorHex then
+            color = DoF.Effects:GetColorHex(def.color)
+        end
+    else
+        text = value
+    end
+
+    if color and color ~= "-" and color ~= "" then
+        return DoF.Utils:Color(color, text)
+    end
+    return text
+end
+
+-- Кодирует один сегмент: ключ + аргументы. Обычные значения (имена, числа)
+-- можно передавать напрямую — они оборачиваются в Arg.text автоматически.
+local function LogEncodeSegment(key, ...)
+    local out = { key }
+    for i = 1, select("#", ...) do
+        local a = select(i, ...)
+        -- Готовый спек от Arg.* отличаем по префиксу вида: "<буква>:<цвет>:".
+        if type(a) == "string" and a:match("^%a:[^:]*:") then
+            out[i + 1] = a
+        else
+            out[i + 1] = Arg.text(a)
+        end
+    end
+    return table.concat(out, LOG_ARG_SEP)
+end
+
+-- Разворачивает один сегмент в текст на языке получателя.
+local function LogRenderSegment(segment)
+    local fields = {}
+    for piece in segment:gmatch("[^" .. LOG_ARG_SEP .. "]+") do
+        fields[#fields + 1] = piece
+    end
+
+    local key = table.remove(fields, 1)
+    if not key then return "" end
+
+    for i = 1, #fields do
+        fields[i] = LogResolveArg(fields[i])
+    end
+
+    -- Ключа может не быть, если у отправителя версия новее. Показываем сам
+    -- ключ: строка будет некрасивой, но событие не потеряется.
+    if not DoF.Locale:Has(key) then
+        return key .. " " .. table.concat(fields, " ")
+    end
+
+    local ok, line = pcall(string.format, DoF.Locale:Get(key), unpack(fields))
+    if not ok then
+        -- Рассинхрон числа аргументов между версиями локалей.
+        return DoF.Locale:Get(key) .. " " .. table.concat(fields, " ")
+    end
+    return line
+end
+
+-- Склеивает сегменты в готовую строку.
+-- Пробел между кусками добавляем сами, но только если следующий кусок не
+-- начинается с пробела: строки-суффиксы (" Урон: %s") уже несут его в себе,
+-- и без этой проверки в журнале появлялись бы двойные пробелы.
+function DoF.Sync:BuildCombatLogLine(payload)
+    local out = ""
+    for segment in payload:gmatch("[^" .. LOG_SEG_SEP .. "]+") do
+        local piece = LogRenderSegment(segment)
+        if out == "" then
+            out = piece
+        elseif piece:match("^%s") then
+            out = out .. piece
+        else
+            out = out .. " " .. piece
+        end
+    end
+    return out
+end
+
+function DoF.Sync:_SendLogPayload(payload)
     -- ВАЖНО: WoW API НЕ возвращает PARTY/RAID сообщения отправителю!
-    -- Поэтому ВСЕГДА сначала добавляем в свой локальный лог
+    -- Поэтому ВСЕГДА сначала добавляем в свой локальный лог.
+    if DoF.CombatLog then
+        DoF.CombatLog:Add(self:BuildCombatLogLine(payload), UnitName("player"))
+    end
+    if IsInGroup() then
+        self:Send("COMBATLOG2", payload)
+    end
+end
+
+-- Запись из одного куска — самый частый случай.
+function DoF.Sync:BroadcastCombatLogKey(key, ...)
+    self:_SendLogPayload(LogEncodeSegment(key, ...))
+end
+
+-- Запись из нескольких кусков:
+--   DoF.Sync:NewLogLine()
+--       :Add("combat.uses", name, Arg.stat(stat), target)
+--       :Add("combat.roll_result", ...)
+--       :Send()
+local LogLine = {}
+LogLine.__index = LogLine
+
+function LogLine:Add(key, ...)
+    self.segments[#self.segments + 1] = LogEncodeSegment(key, ...)
+    return self
+end
+
+function LogLine:Send()
+    if #self.segments == 0 then return end
+    DoF.Sync:_SendLogPayload(table.concat(self.segments, LOG_SEG_SEP))
+end
+
+function DoF.Sync:NewLogLine()
+    return setmetatable({ segments = {} }, LogLine)
+end
+
+-- Дедупликация входящих записей журнала в окне 3с: тот же отправитель может
+-- прислать одно и то же из-за RELIABLE-ретрая или повторного вызова.
+-- Ключуемся по сырому payload, а не по собранному тексту: у COMBATLOG2 текст
+-- зависит от локали получателя, а дубль надо ловить до сборки.
+function DoF.Sync:IsDuplicateLogEntry(sender, raw)
+    if not self._combatLogDedup then self._combatLogDedup = {} end
+    local now = GetTime()
+    local key = sender .. "|" .. raw
+    local lastSeen = self._combatLogDedup[key]
+    if lastSeen and (now - lastSeen) < 3 then
+        return true
+    end
+    self._combatLogDedup[key] = now
+
+    -- Ленивая чистка устаревших записей, чтобы таблица не росла без границ
+    if now - (self._combatLogDedupLastCleanup or 0) > 30 then
+        self._combatLogDedupLastCleanup = now
+        for k, t in pairs(self._combatLogDedup) do
+            if now - t > 3 then self._combatLogDedup[k] = nil end
+        end
+    end
+    return false
+end
+
+-- Совместимость: приём готового текста от клиентов старых версий и те места,
+-- где строка собирается динамически и ключа у неё нет.
+function DoF.Sync:BroadcastCombatLog(text)
     if DoF.CombatLog then
         DoF.CombatLog:Add(text, UnitName("player"))
     end
-    -- Затем отправляем другим (если в группе)
     if IsInGroup() then
         self:Send("COMBATLOG", text)
     end

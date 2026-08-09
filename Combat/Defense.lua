@@ -48,9 +48,8 @@ function DoF.Combat:ProcessNPCAttack(damageMin, damageMax, threshold, defenseSta
                 DoF.Effects:Remove("player", playerName, "tank_redirect")
 
                 -- Перенаправляем атаку на танка через синк
-                DoF.Sync:BroadcastCombatLog(string_format(DoF.L["combat.def.redirect_absorb_log"],
-                    DoF.Utils:Color("CC8040", tankName),
-                    DoF.Utils:Color("FFFFFF", playerName)))
+                DoF.Sync:BroadcastCombatLogKey("combat.def.redirect_absorb_log", DoF.Sync.Arg.color("CC8040", tankName),
+                    DoF.Sync.Arg.color("FFFFFF", playerName))
 
                 local npc = (npcName and npcName ~= "") and npcName or "NPC"
                 local instantRedirect = isInstant and 1 or 0
@@ -80,7 +79,8 @@ function DoF.Combat:ProcessNPCAttack(damageMin, damageMax, threshold, defenseSta
     local total = roll + modifier
 
     local dmg = 0
-    local resultText = ""
+    -- Ключ результата, а не текст: журнал переводится у получателя.
+    local resultKey = ""
     local isSuccess = false
     local isCrit = false
 
@@ -88,20 +88,20 @@ function DoF.Combat:ProcessNPCAttack(damageMin, damageMax, threshold, defenseSta
         isSuccess = false
         -- Бросок урона в диапазоне
         dmg = DoF.Utils:Roll(damageMin, damageMax)
-        resultText = DoF.L["combat.result.crit_fail"]
+        resultKey = "combat.result.crit_fail"
 
     elseif roll == 20 then
         isSuccess = true
         isCrit = true
-        resultText = DoF.L["combat.result.crit_defense"]
+        resultKey = "combat.result.crit_defense"
     else
         isSuccess = self:IsSuccess(total, threshold)
         if isSuccess then
-            resultText = DoF.L["combat.result.success"]
+            resultKey = "combat.result.success"
         else
             -- Бросок урона в диапазоне
             dmg = DoF.Utils:Roll(damageMin, damageMax)
-            resultText = DoF.L["combat.result.fail"]
+            resultKey = "combat.result.fail"
         end
     end
 
@@ -109,25 +109,18 @@ function DoF.Combat:ProcessNPCAttack(damageMin, damageMax, threshold, defenseSta
     local playerName = UnitName("player")
     local attackerName = npcName or "NPC"
 
-    local color = DoF.Config.StatColors[defenseStat] or "FFFFFF"
+    local Arg = DoF.Sync.Arg
 
-    local line1 = string_format(DoF.L["combat.def.attacks"],
-        DoF.Utils:Color("FF6666", attackerName),
-        playerName)
-
-    local compareSign = isSuccess and ">=" or "<="
-    local resultColor = isSuccess and "00FF00" or "FF6666"
-
-    local line2 = string_format(DoF.L["combat.def.defends_line"],
-        playerName,
-        DoF.Utils:Color(color, DoF.Config.StatNames[defenseStat] or defenseStat),
-        DoF.Utils:Color("FFFF00", total),
-        roll, modifier,
-        compareSign,
-        threshold,
-        DoF.Utils:Color(resultColor, resultText))
-
-    local logText = line1 .. " " .. line2
+    local logLine = DoF.Sync:NewLogLine()
+        :Add("combat.def.attacks", Arg.color("FF6666", attackerName), playerName)
+        :Add("combat.def.defends_line",
+            playerName,
+            Arg.stat(defenseStat),
+            Arg.color("FFFF00", total),
+            roll, modifier,
+            isSuccess and ">=" or "<=",
+            threshold,
+            Arg.key(resultKey, isSuccess and "00FF00" or "FF6666"))
 
     if dmg > 0 then
         -- Используем ModifyHP который учитывает щит и ранения
@@ -136,16 +129,15 @@ function DoF.Combat:ProcessNPCAttack(damageMin, damageMax, threshold, defenseSta
         if damageMin ~= damageMax then
             dmgText = dmg .. " (" .. damageMin .. "-" .. damageMax .. ")"
         end
-        logText = logText .. DoF.Locale:Format("combat.damage_suffix", DoF.Utils:Color("FF0000", dmgText))
+        logLine:Add("combat.damage_suffix", Arg.color("FF0000", dmgText))
     end
 
     -- Применяем дебафф при неудачной защите
     if not isSuccess and debuffId and debuffId ~= "" and debuffDuration and debuffDuration > 0 then
         if DoF.Effects then
             DoF.Effects:ApplyInternal("player", playerName, debuffId, debuffValue or 0, debuffDuration)
-            local debuffDef = DoF.Effects.Definitions[debuffId]
-            local debuffName = debuffDef and debuffDef.name or debuffId
-            logText = logText .. " " .. DoF.Utils:Color("CC8833", DoF.Locale:Format("combat.def.debuff_suffix", debuffName, debuffDuration))
+            -- Цвет задаёт сама строка суффикса, поэтому эффект не красим.
+            logLine:Add("combat.def.debuff_suffix_log", Arg.effect(debuffId, ""), debuffDuration)
             -- BroadcastAllEffects только для мастера (ApplyInternal уже отправляет EFFECT_APPLY)
             if DoF.Sync and DoF.Sync:IsMaster() and IsInGroup() then
                 DoF.Effects:BroadcastAllEffects()
@@ -153,7 +145,7 @@ function DoF.Combat:ProcessNPCAttack(damageMin, damageMax, threshold, defenseSta
         end
     end
 
-    DoF.Sync:BroadcastCombatLog(logText)
+    logLine:Send()
 
     -- Отправляем мастеру что защита завершена
     if DoF.Sync then
@@ -197,8 +189,8 @@ function DoF.Combat:ApplyCritDefenseChoice(choice, attackerName, attackerGuid)
         if role == "dd" then
             damage = damage + 3
         end
-        DoF.Sync:BroadcastCombatLog(string_format(DoF.L["combat.def.crit_defense_bonus_damage"],
-            playerName, DoF.Utils:Color("FF6666", DoF.L["combat.label.counterattack"]), DoF.Utils:Color("FF0000", damage)))
+        DoF.Sync:BroadcastCombatLogKey("combat.def.crit_defense_bonus_damage",
+            playerName, DoF.Sync.Arg.key("combat.label.counterattack", "FF6666"), DoF.Sync.Arg.color("FF0000", damage))
         if attackerGuid then
             local data = DoF.Units:Get(attackerGuid)
             if data then
@@ -209,11 +201,11 @@ function DoF.Combat:ApplyCritDefenseChoice(choice, attackerName, attackerGuid)
             self:StartCounterattackTargetSelection(damage)
         end
     elseif choice == "energy" then
-        DoF.Sync:BroadcastCombatLog(string_format(DoF.L["combat.def.crit_defense_bonus"],
-            playerName, DoF.Utils:Color("9966FF", DoF.L["combat.bonus_energy"])))
+        DoF.Sync:BroadcastCombatLogKey("combat.def.crit_defense_bonus",
+            playerName, DoF.Sync.Arg.key("combat.bonus_energy", "9966FF"))
     elseif choice == "tank_hp_buff" then
-        DoF.Sync:BroadcastCombatLog(string_format(DoF.L["combat.def.crit_defense_bonus"],
-            playerName, DoF.Utils:Color("66FF66", DoF.L["ui.combat.bonus_ally_hp"])))
+        DoF.Sync:BroadcastCombatLogKey("combat.def.crit_defense_bonus",
+            playerName, DoF.Sync.Arg.key("ui.combat.bonus_ally_hp", "66FF66"))
         -- Танк: бесплатный бафф +2 HP на союзника — активируем выбор цели
         self:StartTankHPBuffSelection()
     end
@@ -283,7 +275,7 @@ function DoF.Combat:ProcessTankDefenseStreak(isSuccess, defenseStat)
         DoF.Effects:ApplyInternal("player", playerName, effectId, newLevel, 3)
 
         DoF.Utils:Info(DoF.Locale:Format("combat.def.tank_streak", DoF.Utils:Color(color, DoF.Locale:Format("combat.def.tank_streak_label", statName, newLevel))))
-        DoF.Sync:BroadcastCombatLog(DoF.Locale:Format("combat.def.tank_streak_log", playerName, statName, newLevel))
+        DoF.Sync:BroadcastCombatLogKey("combat.def.tank_streak_log", playerName, statName, newLevel)
     end
 end
 
@@ -392,9 +384,8 @@ function DoF.Combat:ProcessTankShred(npcGuid, npcName)
         local statName = statChoice == "fort" and DoF.L["stats.fortitude.label"] or DoF.L["stats.reflex.label"]
         local color = statChoice == "fort" and "FF8844" or "FFAA44"
         DoF.Utils:Info(DoF.Locale:Format("combat.def.shred_applied", DoF.Utils:Color(color, DoF.Locale:Format("combat.def.shred_label", statName, newValue)), newStacks, cfg.TANK_SHRED_MAX_STACKS))
-        DoF.Sync:BroadcastCombatLog(string_format(DoF.L["combat.def.shred_log"],
-            playerName, DoF.Utils:Color("FF6666", npcName),
-            DoF.Utils:Color(color, statName .. " -" .. newValue .. " (" .. newStacks .. "/" .. cfg.TANK_SHRED_MAX_STACKS .. ")")))
+        DoF.Sync:BroadcastCombatLogKey("combat.def.shred_log", playerName, DoF.Sync.Arg.color("FF6666", npcName),
+            DoF.Sync.Arg.color(color, statName .. " -" .. newValue .. " (" .. newStacks .. "/" .. cfg.TANK_SHRED_MAX_STACKS .. ")"))
     end, npcGuid, npcName, fortStacks >= cfg.TANK_SHRED_MAX_STACKS, reflexStacks >= cfg.TANK_SHRED_MAX_STACKS)
 end
 
@@ -445,7 +436,7 @@ function DoF.Combat:TankHPBuffApply()
 
     local playerName = UnitName("player")
     DoF.Utils:Info(DoF.Locale:Format("combat.def.tank_hp_buff_applied", name, DoF.Utils:Color("66FF66", DoF.L["combat.label.tank_hp"])))
-    DoF.Sync:BroadcastCombatLog(DoF.Locale:Format("combat.def.tank_hp_buff_log", playerName, name))
+    DoF.Sync:BroadcastCombatLogKey("combat.def.tank_hp_buff_log", playerName, name)
 
     self.TankHPBuffActive = false
     if DoF.UI and DoF.UI.HideTankHPBuffPanel then
@@ -529,11 +520,10 @@ function DoF.Combat:CounterattackSelectTarget()
     local playerName = self.CounterattackState.playerName or UnitName("player")
     DoF.Utils:Warn(DoF.Locale:Format("combat.def.counter_damage_taken", name, DoF.Utils:Color("FF0000", damage), DoF.Utils:Color("FF0000", data.hp .. "/" .. data.maxHp)))
 
-    local logText = string_format(DoF.L["combat.def.counter_log"],
+    DoF.Sync:BroadcastCombatLogKey("combat.def.counter_log",
         playerName, name,
-        DoF.Utils:Color("FF0000", damage),
-        DoF.Utils:Color("FF0000", data.hp .. "/" .. data.maxHp))
-    DoF.Sync:BroadcastCombatLog(logText)
+        DoF.Sync.Arg.color("FF0000", damage),
+        DoF.Sync.Arg.color("FF0000", data.hp .. "/" .. data.maxHp))
 
     -- Сброс состояния
     self:CounterattackCancel()
@@ -562,15 +552,12 @@ function DoF.Combat:ProcessDefenseFailure(damageMin, damageMax, npcName, debuffI
     local playerName = UnitName("player")
     local attackerName = npcName or "NPC"
 
-    local line1 = string_format(DoF.L["combat.def.attacks"],
-        DoF.Utils:Color("FF6666", attackerName),
-        playerName)
+    local Arg = DoF.Sync.Arg
 
-    local line2 = string_format(DoF.L["combat.def.no_defense_line"],
-        playerName,
-        DoF.Utils:Color("FF0000", DoF.L["combat.label.auto_fail"]))
-
-    local logText = line1 .. " " .. line2
+    local logLine = DoF.Sync:NewLogLine()
+        :Add("combat.def.attacks", Arg.color("FF6666", attackerName), playerName)
+        :Add("combat.def.no_defense_line", playerName,
+            Arg.key("combat.label.auto_fail", "FF0000"))
 
     -- Бросок урона в диапазоне
     local damage = DoF.Utils:Roll(damageMin, damageMax)
@@ -580,7 +567,7 @@ function DoF.Combat:ProcessDefenseFailure(damageMin, damageMax, npcName, debuffI
         if damageMin ~= damageMax then
             dmgText = damage .. " (" .. damageMin .. "-" .. damageMax .. ")"
         end
-        logText = logText .. DoF.Locale:Format("combat.damage_suffix", DoF.Utils:Color("FF0000", dmgText))
+        logLine:Add("combat.damage_suffix", Arg.color("FF0000", dmgText))
         DoF.Utils:Error(DoF.Locale:Format("combat.def.time_up_damage", damage))
     end
 
@@ -588,9 +575,8 @@ function DoF.Combat:ProcessDefenseFailure(damageMin, damageMax, npcName, debuffI
     if debuffId and debuffId ~= "" and debuffDuration and debuffDuration > 0 then
         if DoF.Effects then
             DoF.Effects:ApplyInternal("player", playerName, debuffId, debuffValue or 0, debuffDuration)
-            local debuffDef = DoF.Effects.Definitions[debuffId]
-            local debuffName = debuffDef and debuffDef.name or debuffId
-            logText = logText .. " " .. DoF.Utils:Color("CC8833", DoF.Locale:Format("combat.def.debuff_suffix", debuffName, debuffDuration))
+            -- Цвет задаёт сама строка суффикса, поэтому эффект не красим.
+            logLine:Add("combat.def.debuff_suffix_log", Arg.effect(debuffId, ""), debuffDuration)
             -- BroadcastAllEffects только для мастера (ApplyInternal уже отправляет EFFECT_APPLY)
             if DoF.Sync and DoF.Sync:IsMaster() and IsInGroup() then
                 DoF.Effects:BroadcastAllEffects()
@@ -598,7 +584,7 @@ function DoF.Combat:ProcessDefenseFailure(damageMin, damageMax, npcName, debuffI
         end
     end
 
-    DoF.Sync:BroadcastCombatLog(logText)
+    logLine:Send()
 
     if DoF.Sync then
         -- Если мы сами мастер, очищаем флаг напрямую
@@ -635,11 +621,10 @@ function DoF.Combat:ProcessModifyHP(value, source)
         DoF.Events:Fire("PLAYER_HP_CHANGED", newHP, maxHP)
     end
 
-    local logText = string_format(DoF.L["combat.def.gm_hp_log"],
-        UnitName("player"), value > 0 and DoF.L["combat.label.gained"] or DoF.L["combat.label.lost"],
+    DoF.Sync:BroadcastCombatLogKey("combat.def.gm_hp_log",
+        UnitName("player"),
+        DoF.Sync.Arg.key(value > 0 and "combat.label.gained" or "combat.label.lost"),
         math_abs(value), DoF.Stats:GetCurrentHP(), DoF.Stats:GetMaxHP())
-
-    DoF.Sync:BroadcastCombatLog(logText)
 
     if DoF.Sync then
         DoF.Sync:BroadcastPlayerData()
@@ -662,8 +647,7 @@ function DoF.Combat:ProcessHeal(heal, healer, removeWound)
         DoF.Stats:RemoveWound()
     end
 
-    DoF.Sync:BroadcastCombatLog(string_format(DoF.L["combat.def.healed_log"],
-        UnitName("player"), healer, newHP, maxHP))
+    DoF.Sync:BroadcastCombatLogKey("combat.def.healed_log", UnitName("player"), healer, newHP, maxHP)
 
     if DoF.Sync then
         DoF.Sync:BroadcastPlayerData()
@@ -858,10 +842,9 @@ function DoF.Combat:TankTaunt()
     DoF.Effects:ApplyInternal("player", playerName, "cooldown_tank_taunt", 0, 2)
 
     DoF.Utils:Info(DoF.Locale:Format("combat.def.taunt_applied", DoF.Utils:Color("CC8040", DoF.L["combat.label.taunt"]), DoF.Utils:Color("FF6666", name)))
-    DoF.Sync:BroadcastCombatLog(string_format(DoF.L["combat.def.taunt_log"],
-        DoF.Utils:Color("CC8040", playerName),
-        DoF.Utils:Color("FF6666", name),
-        duration))
+    DoF.Sync:BroadcastCombatLogKey("combat.def.taunt_log", DoF.Sync.Arg.color("CC8040", playerName),
+        DoF.Sync.Arg.color("FF6666", name),
+        duration)
 
     if DoF.TurnSystem then
         DoF.TurnSystem:OnActionPerformed()
@@ -989,10 +972,10 @@ function DoF.Combat:EndTauntAoE()
         DoF.UI:HideAoETauntPanel()
     end
 
-    DoF.Sync:BroadcastCombatLog(string_format(DoF.L["combat.def.mass_taunt_log"],
-        DoF.Utils:Color("CC8040", playerName),
-        DoF.Utils:Color("FF6633", DoF.L["combat.label.mass_taunt_acc"]),
-        count))
+    DoF.Sync:BroadcastCombatLogKey("combat.def.mass_taunt_log",
+        DoF.Sync.Arg.color("CC8040", playerName),
+        DoF.Sync.Arg.key("combat.label.mass_taunt_acc", "FF6633"),
+        count)
 
     if DoF.TurnSystem then
         DoF.TurnSystem:OnActionPerformed()
@@ -1067,9 +1050,8 @@ function DoF.Combat:TankRedirect()
     DoF.Effects:ApplyInternal("player", playerName, "cooldown_tank_redirect", 0, 2)
 
     DoF.Utils:Info(DoF.Locale:Format("combat.def.taunt_applied", DoF.Utils:Color("FFD700", DoF.L["combat.label.redirect"]), DoF.Utils:Color("FFFFFF", name)))
-    DoF.Sync:BroadcastCombatLog(string_format(DoF.L["combat.def.redirect_log"],
-        DoF.Utils:Color("CC8040", playerName),
-        DoF.Utils:Color("FFFFFF", name)))
+    DoF.Sync:BroadcastCombatLogKey("combat.def.redirect_log", DoF.Sync.Arg.color("CC8040", playerName),
+        DoF.Sync.Arg.color("FFFFFF", name))
 
     if DoF.TurnSystem then
         DoF.TurnSystem:OnActionPerformed()

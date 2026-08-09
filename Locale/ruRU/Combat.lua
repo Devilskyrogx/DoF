@@ -165,6 +165,9 @@ DoF.Locale:Register("ruRU", {
     ["combat.def.attacks"] = "%s атакует %s.",
     ["combat.def.defends_line"] = "%s защищается %s: %s (%d+%d) %s %d - %s",
     ["combat.def.debuff_suffix"] = "%s на %s р.",
+    -- Тот же суффикс, но как отдельный кусок записи журнала: цвет и ведущий
+    -- пробел внутри строки, потому что склейку делает получатель.
+    ["combat.def.debuff_suffix_log"] = " |cFFCC8833%s на %s р.|r",
     ["combat.def.no_defense_line"] = "%s не успел защититься - %s!",
     ["combat.def.time_up_damage"] = "Время вышло! Получен урон: %s",
     ["combat.def.crit_defense_bonus"] = "%s выбирает крит защиты: %s",

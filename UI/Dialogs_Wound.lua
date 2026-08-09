@@ -60,7 +60,7 @@ function DoF.Dialogs:ShowCriticalWoundMasterDialog(playerName)
     masterFrame.leaveBtn:SetScript("OnClick", function()
         masterFrame:Hide()
         if DoF.Sync then
-            DoF.Sync:BroadcastCombatLog(DoF.Locale:Format("ui.wound.left_wounded_log", playerName))
+            DoF.Sync:BroadcastCombatLogKey("ui.wound.left_wounded_log", playerName)
         end
     end)
 
@@ -172,11 +172,10 @@ function DoF.Dialogs:ShowSurvivalRollSetup(playerName)
         end
 
         if DoF.Sync then
-            local color = DoF.Config.StatColors[selectedStat] or "FFFFFF"
-            DoF.Sync:BroadcastCombatLog(DoF.Locale:Format("ui.wound.request_log",
+            DoF.Sync:BroadcastCombatLogKey("ui.wound.request_log",
                 playerName,
-                DoF.Utils:Color(color, DoF.Config.StatNames[selectedStat] or selectedStat),
-                dc))
+                DoF.Sync.Arg.stat(selectedStat),
+                dc)
         end
     end)
     setupFrame.cancelBtn:SetScript("OnClick", function() setupFrame:Hide() end)

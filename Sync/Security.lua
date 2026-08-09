@@ -45,6 +45,7 @@ local SAFE_COMMANDS = {
     PLAYERHP = true,
     REQUESTHP = true,
     COMBATLOG = true,
+    COMBATLOG2 = true,        -- Журнал в виде «ключ локали + аргументы»
     MASTER = true,
     HEAL = true,
     SHIELD = true,

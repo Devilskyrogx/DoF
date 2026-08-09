@@ -205,24 +205,42 @@ function DoF.Combat:CalculateHealing(isCrit)
 end
 
 -- Форматирование результата броска
-function DoF.Combat:FormatRollResult(attackerName, statName, targetName, total, roll, modifier, threshold, isSuccess, resultText)
-    local compareSign = isSuccess and ">=" or "<="
-    local resultColor = isSuccess and "00FF00" or "FF6666"
-    local statColor = DoF.Config.StatColors[statName] or "FFFFFF"
-    
-    local line1 = string.format(DoF.L["combat.uses"],
-        attackerName,
-        DoF.Utils:Color(statColor, DoF.Config.StatNames[statName] or statName),
-        targetName)
-    
-    local line2 = string.format(DoF.L["combat.roll_result"],
-        DoF.Utils:Color("FFFF00", total),
-        roll, modifier,
-        compareSign,
-        threshold,
-        DoF.Utils:Color(resultColor, resultText))
-    
-    return line1, line2
+-- Заготовка записи журнала: вместо готового текста внутри лежат ключи локали.
+-- Строку соберёт получатель — на своём языке. Поэтому resultKey это ключ вроде
+-- "combat.result.success", а не переведённое слово.
+function DoF.Combat:BuildRollLogLine(attackerName, statName, targetName, total, roll, modifier, threshold, isSuccess, resultKey)
+    local Arg = DoF.Sync.Arg
+    return DoF.Sync:NewLogLine()
+        :Add("combat.uses", attackerName, Arg.stat(statName), targetName)
+        :Add("combat.roll_result",
+            Arg.color("FFFF00", total),
+            roll, modifier,
+            isSuccess and ">=" or "<=",
+            threshold,
+            Arg.key(resultKey, isSuccess and "00FF00" or "FF6666"))
+end
+
+-- Ключ результата обычной d20-проверки. Единая точка, чтобы «крит. провал» на
+-- единице и «крит. успех» на двадцатке не расходились между действиями.
+function DoF.Combat:GetRollResultKey(roll, isSuccess)
+    if roll == 1 then return "combat.result.crit_fail" end
+    if roll == 20 then return "combat.result.crit_success" end
+    return isSuccess and "combat.result.success" or "combat.result.fail"
+end
+
+-- Запись вида «игрок пытается что-то сделать броском Духа»: снятие раны,
+-- диспел и пурж отличаются только ключом первой строки.
+function DoF.Combat:BuildSpiritRollLogLine(actionKey, playerName, targetName, total, roll, modifier, threshold, isSuccess, resultKey)
+    local Arg = DoF.Sync.Arg
+    return DoF.Sync:NewLogLine()
+        :Add(actionKey, playerName, targetName)
+        :Add("combat.roll_line",
+            Arg.stat("Spirit"),
+            Arg.color("FFFF00", total),
+            roll, modifier,
+            isSuccess and ">=" or "<",
+            threshold,
+            Arg.key(resultKey, isSuccess and "00FF00" or "FF6666"))
 end
 
 
@@ -303,15 +321,18 @@ function DoF.Combat:Attack(stat)
     local threshold = math_max(1, baseThreshold + effectMod + adaptMod)
     
     -- Результат
+    -- Храним КЛЮЧ результата, а не переведённый текст: журнал уходит в группу
+    -- ключами, чтобы каждый прочитал его на своём языке. Текст для локального
+    -- вывода получаем из ключа там, где он нужен.
     local damage = 0
-    local resultText = ""
+    local resultKey = ""
     local isSuccess = false
     local isCrit = false
     local floatType = "miss"
 
     if roll == 1 then
         isSuccess = false
-        resultText = DoF.L["combat.result.crit_fail"]
+        resultKey = "combat.result.crit_fail"
         floatType = "crit_fail"
 
     elseif roll == 20 then
@@ -319,7 +340,7 @@ function DoF.Combat:Attack(stat)
         isCrit = true
         -- Базовый урон без +3 бонуса (игрок выберет в меню)
         damage = self:CalculateDamage(false)
-        resultText = DoF.L["combat.result.crit_success"]
+        resultKey = "combat.result.crit_success"
         floatType = "crit_success"
 
     else
@@ -333,17 +354,17 @@ function DoF.Combat:Attack(stat)
                 if evasionChance > 0 and math_random(1, 100) <= evasionChance then
                     evaded = true
                     isSuccess = false
-                    resultText = DoF.L["combat.result.dodge"]
+                    resultKey = "combat.result.dodge"
                     floatType = "miss"
                 end
             end
             if not evaded then
                 damage = self:CalculateDamage(false)
-                resultText = DoF.L["combat.result.success"]
+                resultKey = "combat.result.success"
                 floatType = "hit"
             end
         else
-            resultText = DoF.L["combat.result.fail"]
+            resultKey = "combat.result.fail"
             floatType = "miss"
         end
     end
@@ -363,21 +384,22 @@ function DoF.Combat:Attack(stat)
 
     -- Форматируем вывод
     local playerName = UnitName("player")
-    local line1, line2
+    local Arg = DoF.Sync.Arg
+    local logLine
 
     if reflected then
-        line1, line2 = self:FormatRollResult(playerName, stat, name, total, roll, modifier, threshold, isSuccess, DoF.L["combat.result.reflected"])
-        line2 = line2 .. DoF.Locale:Format("combat.reflected_damage", damage)
+        logLine = self:BuildRollLogLine(playerName, stat, name, total, roll, modifier, threshold, isSuccess, "combat.result.reflected")
+        logLine:Add("combat.reflected_damage", damage)
         damage = 0 -- NPC не получает урона
     else
-        line1, line2 = self:FormatRollResult(playerName, stat, name, total, roll, modifier, threshold, isSuccess, resultText)
+        logLine = self:BuildRollLogLine(playerName, stat, name, total, roll, modifier, threshold, isSuccess, resultKey)
         if damage > 0 then
-            line2 = line2 .. DoF.Locale:Format("combat.damage_suffix", DoF.Utils:Color("FF6666", damage))
+            logLine:Add("combat.damage_suffix", Arg.color("FF6666", damage))
         end
     end
 
     -- Лог боя (отправляем всем через Sync, включая себя)
-    DoF.Sync:BroadcastCombatLog(line1 .. " " .. line2)
+    logLine:Send()
 
     -- Всплывающий текст
     if DoF.UI then
@@ -410,19 +432,15 @@ function DoF.Combat:Attack(stat)
                 local totalDmg = dotValue * dotDuration
                 DoF.Stats:ModifyHP(-totalDmg)
                 if DoF.Sync then DoF.Sync:BroadcastPlayerData() end
-                DoF.Sync:BroadcastCombatLog(string_format(
-                    DoF.L["combat.poisoned_instant"],
-                    playerName,
-                    DoF.Utils:Color("00CC00", name),
-                    totalDmg))
+                DoF.Sync:BroadcastCombatLogKey("combat.poisoned_instant", playerName,
+                    DoF.Sync.Arg.color("00CC00", name),
+                    totalDmg)
                 DoF.CombatLog:Add(string_format(DoF.L["combat.poison_log"], name, playerName, totalDmg))
             elseif DoF.Effects then
                 DoF.Effects:ApplyInternal("player", playerName, "dot_master", dotValue, dotDuration, name)
-                DoF.Sync:BroadcastCombatLog(string_format(
-                    DoF.L["combat.poisoned"],
-                    playerName,
-                    DoF.Utils:Color("00CC00", name),
-                    dotValue, dotDuration))
+                DoF.Sync:BroadcastCombatLogKey("combat.poisoned", playerName,
+                    DoF.Sync.Arg.color("00CC00", name),
+                    dotValue, dotDuration)
             end
         end
     end
@@ -477,21 +495,21 @@ function DoF.Combat:ApplyCritAttackChoice(choice, baseDamage, targetGuid, target
         local range = DoF.Config:GetDamageRange(DoF.Stats:GetLevel(), DoF.Stats:GetRole())
         local critBonus = math_min(range.max, DoF.Config.CRIT_BONUS_CAP)
         finalDamage = baseDamage + critBonus
-        DoF.Sync:BroadcastCombatLog(string_format(DoF.L["combat.crit_bonus_damage"],
+        DoF.Sync:BroadcastCombatLogKey("combat.crit_bonus_damage",
             playerName,
-            DoF.Utils:Color("FF6666", DoF.Locale:Format("combat.bonus_damage_label", critBonus)),
-            DoF.Utils:Color("FFFF00", baseDamage),
-            DoF.Utils:Color("FF0000", finalDamage)))
+            DoF.Sync.Arg.keyf("combat.bonus_damage_label", "FF6666", critBonus),
+            DoF.Sync.Arg.color("FFFF00", baseDamage),
+            DoF.Sync.Arg.color("FF0000", finalDamage))
     elseif choice == "energy" then
         -- Энергия уже добавлена в меню
-        DoF.Sync:BroadcastCombatLog(string_format(DoF.L["combat.crit_bonus"],
-            playerName, DoF.Utils:Color("9966FF", DoF.L["combat.bonus_energy"])))
+        DoF.Sync:BroadcastCombatLogKey("combat.crit_bonus",
+            playerName, DoF.Sync.Arg.key("combat.bonus_energy", "9966FF"))
     elseif choice == "full_heal" then
         -- Полное исцеление цели (Целитель)
         local maxHP = data.maxHp or 10
         DoF.Units:ModifyHP(targetGuid, maxHP)
-        DoF.Sync:BroadcastCombatLog(string_format(DoF.L["combat.crit_bonus_target"],
-            playerName, DoF.Utils:Color("66FF66", DoF.L["combat.bonus_full_heal"]), targetName))
+        DoF.Sync:BroadcastCombatLogKey("combat.crit_bonus_target",
+            playerName, DoF.Sync.Arg.key("combat.bonus_full_heal", "66FF66"), targetName)
         -- Завершаем ход (не наносим урон)
         if DoF.TurnSystem then
             DoF.TurnSystem:OnActionPerformed()
@@ -499,8 +517,8 @@ function DoF.Combat:ApplyCritAttackChoice(choice, baseDamage, targetGuid, target
         return
     elseif choice == "shield" then
         -- Щит уже добавлен в меню
-        DoF.Sync:BroadcastCombatLog(string_format(DoF.L["combat.crit_bonus"],
-            playerName, DoF.Utils:Color("66CCFF", DoF.L["combat.bonus_shield_3"])))
+        DoF.Sync:BroadcastCombatLogKey("combat.crit_bonus",
+            playerName, DoF.Sync.Arg.key("combat.bonus_shield_3", "66CCFF"))
     end
 
     -- Применяем урон (Damage учитывает щит)
@@ -526,19 +544,15 @@ function DoF.Combat:ApplyCritAttackChoice(choice, baseDamage, targetGuid, target
                 local totalDmg = dotValue * dotDuration
                 DoF.Stats:ModifyHP(-totalDmg)
                 if DoF.Sync then DoF.Sync:BroadcastPlayerData() end
-                DoF.Sync:BroadcastCombatLog(string_format(
-                    DoF.L["combat.poisoned_instant"],
-                    playerName,
-                    DoF.Utils:Color("00CC00", targetName),
-                    totalDmg))
+                DoF.Sync:BroadcastCombatLogKey("combat.poisoned_instant", playerName,
+                    DoF.Sync.Arg.color("00CC00", targetName),
+                    totalDmg)
                 DoF.CombatLog:Add(string_format(DoF.L["combat.poison_log"], targetName, playerName, totalDmg))
             elseif DoF.Effects then
                 DoF.Effects:ApplyInternal("player", playerName, "dot_master", dotValue, dotDuration, targetName)
-                DoF.Sync:BroadcastCombatLog(string_format(
-                    DoF.L["combat.poisoned"],
-                    playerName,
-                    DoF.Utils:Color("00CC00", targetName),
-                    dotValue, dotDuration))
+                DoF.Sync:BroadcastCombatLogKey("combat.poisoned", playerName,
+                    DoF.Sync.Arg.color("00CC00", targetName),
+                    dotValue, dotDuration)
             end
         end
     end
@@ -593,15 +607,11 @@ function DoF.Combat:ProcessAttackReactivePassives(guid, npcName, attackStat, isS
                 local playerName = UnitName("player")
                 DoF.Stats:ModifyHP(-dmg)
                 if DoF.Sync then DoF.Sync:BroadcastPlayerData() end
-                DoF.Sync:BroadcastCombatLog(string_format(
-                    DoF.L["combat.thorns_damage"],
-                    DoF.Utils:Color("FFCC00", npcName), dmg, playerName))
+                DoF.Sync:BroadcastCombatLogKey("combat.thorns_damage", DoF.Sync.Arg.color("FFCC00", npcName), dmg, playerName)
                 DoF.CombatLog:Add(string_format(DoF.L["combat.thorns_log"], npcName, playerName, dmg))
             else
                 local thresh = thorns.threshold or 10
-                DoF.Sync:BroadcastCombatLog(string_format(
-                    DoF.L["combat.thorns_trigger"],
-                    DoF.Utils:Color("FFCC00", npcName)))
+                DoF.Sync:BroadcastCombatLogKey("combat.thorns_trigger", DoF.Sync.Arg.color("FFCC00", npcName))
                 -- Показываем диалог выбора защиты (Hybrid)
                 DoF.Dialogs:ShowHybridDefenseChoice(npcName, dmgMin, dmgMax, thresh, nil, 0, 0)
             end
@@ -617,9 +627,7 @@ function DoF.Combat:ProcessAttackReactivePassives(guid, npcName, attackStat, isS
             local dmgMax = berserk.damageMax or 6
             local thresh = berserk.threshold or 14
             local stunDur = berserk.stunDuration or 1
-            DoF.Sync:BroadcastCombatLog(string_format(
-                DoF.L["combat.berserk"],
-                DoF.Utils:Color("FF4444", npcName)))
+            DoF.Sync:BroadcastCombatLogKey("combat.berserk", DoF.Sync.Arg.color("FF4444", npcName))
             -- Показываем диалог выбора защиты (Hybrid + стан)
             DoF.Dialogs:ShowHybridDefenseChoice(npcName, dmgMin, dmgMax, thresh, "stun", 0, stunDur)
             return
@@ -635,9 +643,7 @@ function DoF.Combat:ProcessAttackReactivePassives(guid, npcName, attackStat, isS
             local dmgMax = ca.damageMax or 5
             local thresh = ca.threshold or 12
             local defStat = ca.defenseStat or "Hybrid"
-            DoF.Sync:BroadcastCombatLog(string_format(
-                DoF.L["combat.counterattack"],
-                DoF.Utils:Color("FF6666", npcName)))
+            DoF.Sync:BroadcastCombatLogKey("combat.counterattack", DoF.Sync.Arg.color("FF6666", npcName))
             -- Показываем диалог защиты (выбор стата или фиксированный)
             if defStat == "Hybrid" then
                 DoF.Dialogs:ShowHybridDefenseChoice(npcName, dmgMin, dmgMax, thresh, nil, 0, 0)
@@ -710,13 +716,15 @@ function DoF.Combat:ProcessSpecialActionRoll(threshold, stat, description, requi
 
     local isSuccess = false
 
+    local Arg = DoF.Sync.Arg
+
     if noRoll then
-        -- Автоуспех без броска
-        local actionTypeName = DoF.Config.SpecialActionTypes[actionType] or actionType
-        local line = string.format(DoF.L["combat.special_performs"],
-            playerName, description, DoF.Utils:Color("FFD700", actionTypeName),
-            DoF.Utils:Color("00FF00", DoF.L["combat.special_approved_by_gm"]))
-        DoF.Sync:BroadcastCombatLog(line)
+        -- Автоуспех без броска. Название типа действия — переводимое:
+        -- Config собирает SpecialActionTypes из ключей "core.action.<тип>".
+        DoF.Sync:BroadcastCombatLogKey("combat.special_performs",
+            playerName, description,
+            Arg.key("core.action." .. tostring(actionType), "FFD700"),
+            Arg.key("combat.special_approved_by_gm", "00FF00"))
         isSuccess = true
     else
         -- Получаем модификатор характеристики
@@ -726,17 +734,12 @@ function DoF.Combat:ProcessSpecialActionRoll(threshold, stat, description, requi
         local roll = DoF.Utils:Roll(1, 20)
         local total = roll + modifier
 
-        -- Используем названия и цвета из конфига
-        local statName = DoF.Config.StatNames[stat] or stat
-        local statColor = DoF.Config.StatColors[stat] or "FFFFFF"
-
         -- Крит провал (1)
         if roll == 1 then
-            local line = string.format(DoF.L["combat.special_crit_fail_line"],
-                playerName, description, DoF.Utils:Color(statColor, statName),
-                DoF.Utils:Color("FFFF00", total), roll, modifier,
-                DoF.Utils:Color("FF6666", DoF.L["combat.result.crit_fail_excl"]))
-            DoF.Sync:BroadcastCombatLog(line)
+            DoF.Sync:BroadcastCombatLogKey("combat.special_crit_fail_line",
+                playerName, description, Arg.stat(stat),
+                Arg.color("FFFF00", total), roll, modifier,
+                Arg.key("combat.result.crit_fail_excl", "FF6666"))
             isSuccess = false
 
         -- Проверка успеха
@@ -745,25 +748,22 @@ function DoF.Combat:ProcessSpecialActionRoll(threshold, stat, description, requi
             -- Крит успех (20)
             if roll == 20 then
                 DoF.Stats:AddEnergy(DoF.Config.ENERGY_GAIN_CRIT_CHOICE)
-                local line = string.format(DoF.L["combat.special_success_line"],
-                    playerName, description, DoF.Utils:Color(statColor, statName),
-                    DoF.Utils:Color("FFFF00", total), roll, modifier, threshold,
-                    DoF.Utils:Color("00FF00", DoF.L["combat.result.crit_success_excl"]))
-                DoF.Sync:BroadcastCombatLog(line)
+                DoF.Sync:BroadcastCombatLogKey("combat.special_success_line",
+                    playerName, description, Arg.stat(stat),
+                    Arg.color("FFFF00", total), roll, modifier, threshold,
+                    Arg.key("combat.result.crit_success_excl", "00FF00"))
             else
-                local line = string.format(DoF.L["combat.special_success_line"],
-                    playerName, description, DoF.Utils:Color(statColor, statName),
-                    DoF.Utils:Color("FFFF00", total), roll, modifier, threshold,
-                    DoF.Utils:Color("00FF00", DoF.L["combat.result.success_excl"]))
-                DoF.Sync:BroadcastCombatLog(line)
+                DoF.Sync:BroadcastCombatLogKey("combat.special_success_line",
+                    playerName, description, Arg.stat(stat),
+                    Arg.color("FFFF00", total), roll, modifier, threshold,
+                    Arg.key("combat.result.success_excl", "00FF00"))
             end
         else
             -- Неудача
-            local line = string.format(DoF.L["combat.special_fail_line"],
-                playerName, description, DoF.Utils:Color(statColor, statName),
-                DoF.Utils:Color("FFFF00", total), roll, modifier, threshold,
-                DoF.Utils:Color("FF6666", DoF.L["combat.result.failure"]))
-            DoF.Sync:BroadcastCombatLog(line)
+            DoF.Sync:BroadcastCombatLogKey("combat.special_fail_line",
+                playerName, description, Arg.stat(stat),
+                Arg.color("FFFF00", total), roll, modifier, threshold,
+                Arg.key("combat.result.failure", "FF6666"))
             isSuccess = false
         end
     end
@@ -902,7 +902,7 @@ function DoF.Combat:SpecialActionApplyTarget()
             DoF.Effects:Apply("player", targetName, effectId, value, duration, playerName)
             DoF.Utils:Info(DoF.Locale:Format("combat.buff_applied", DoF.Utils:Color("00FF00", def.name), DoF.Utils:Color("FFFFFF", targetName)))
             if DoF.Sync then
-                DoF.Sync:BroadcastCombatLog(DoF.Locale:Format("combat.buff_applied_log", playerName, def.name, targetName))
+                DoF.Sync:BroadcastCombatLogKey("combat.buff_applied_log", playerName, DoF.Sync.Arg.effect(effectId), targetName)
             end
 
         elseif mode == "wound_removal" then
@@ -933,7 +933,7 @@ function DoF.Combat:SpecialActionApplyTarget()
             end
             DoF.Utils:Info(DoF.Locale:Format("combat.wound_removed_from", DoF.Utils:Color("FFFFFF", targetName)))
             if DoF.Sync then
-                DoF.Sync:BroadcastCombatLog(DoF.Locale:Format("combat.wound_removed_log", playerName, targetName))
+                DoF.Sync:BroadcastCombatLogKey("combat.wound_removed_log", playerName, targetName)
             end
 
         elseif mode == "dispel" then
@@ -971,9 +971,8 @@ function DoF.Combat:SpecialActionApplyTarget()
         local damage = math.random(state.dmgMin, state.dmgMax)
         DoF.Units:Damage(guid, damage)
 
-        local line = string.format(DoF.L["combat.special_damage_log"],
-            playerName, name, DoF.Utils:Color("FF6666", damage))
-        DoF.Sync:BroadcastCombatLog(line)
+        DoF.Sync:BroadcastCombatLogKey("combat.special_damage_log",
+            playerName, name, DoF.Sync.Arg.color("FF6666", damage))
 
         DoF.Utils:Warn(DoF.Locale:Format("combat.takes_damage", name,
             DoF.Utils:Color("FF0000", damage),
@@ -998,7 +997,7 @@ function DoF.Combat:SpecialActionApplyTarget()
         local result = DoF.Effects:Purge("npc", guid, true) -- skipChecks = true
         if not result then return end -- Нет баффов — не считаем как трату цели
         if DoF.Sync then
-            DoF.Sync:BroadcastCombatLog(DoF.Locale:Format("combat.purge_log", playerName, name))
+            DoF.Sync:BroadcastCombatLogKey("combat.purge_log", playerName, name)
         end
         state.selectedTargets[guid] = true
     end
@@ -1138,7 +1137,8 @@ function DoF.Combat:Heal()
     local fatigueThreshold = fatigueStacks * DoF.Config.HEALING_FATIGUE_THRESHOLD_PER_STACK
 
     local heal = 0
-    local resultText = ""
+    -- Ключ результата, а не текст: журнал переводится у получателя.
+    local resultKey = ""
     local isSuccess = false
     local isCrit = false
     local floatType = "miss"
@@ -1146,7 +1146,7 @@ function DoF.Combat:Heal()
 
     if roll == 1 then
         isSuccess = false
-        resultText = DoF.L["combat.result.crit_fail"]
+        resultKey = "combat.result.crit_fail"
         floatType = "crit_fail"
 
     elseif roll == 20 then
@@ -1154,7 +1154,7 @@ function DoF.Combat:Heal()
         isSuccess = true
         isCrit = true
         heal = self:CalculateHealing(true)
-        resultText = DoF.L["combat.result.crit_success"]
+        resultKey = "combat.result.crit_success"
         floatType = "crit_heal"
 
         -- Хилер при крите снимает ранение
@@ -1167,49 +1167,46 @@ function DoF.Combat:Heal()
             isSuccess = self:IsSuccess(total, fatigueThreshold)
             if isSuccess then
                 heal = self:CalculateHealing(false)
-                resultText = DoF.L["combat.result.success"]
+                resultKey = "combat.result.success"
                 floatType = "heal"
             else
-                resultText = DoF.L["combat.result.fail_fatigue"]
+                resultKey = "combat.result.fail_fatigue"
                 floatType = "miss"
             end
         else
             isSuccess = true
             heal = self:CalculateHealing(false)
-            resultText = DoF.L["combat.result.success"]
+            resultKey = "combat.result.success"
             floatType = "heal"
         end
     end
 
     -- Форматируем вывод
-    local statColor = DoF.Config.StatColors["Spirit"] or "FFFFFF"
+    local Arg = DoF.Sync.Arg
     local resultColor = isSuccess and "00FF00" or "FF6666"
-    local line1 = string_format(DoF.L["combat.heals"],
-        playerName,
-        name,
-        DoF.Utils:Color(statColor, DoF.Config.StatNames["Spirit"] or "Spirit"))
-    local line2
+    local logLine = DoF.Sync:NewLogLine()
+        :Add("combat.heals", playerName, name, Arg.stat("Spirit"))
+
     if fatigueThreshold > 0 then
-        local compareSign = isSuccess and ">=" or "<"
-        line2 = string_format(DoF.L["combat.roll_short"],
-            DoF.Utils:Color("FFFF00", total),
+        logLine:Add("combat.roll_short",
+            Arg.color("FFFF00", total),
             roll, modifier,
-            compareSign, fatigueThreshold,
-            DoF.Utils:Color(resultColor, resultText))
+            isSuccess and ">=" or "<", fatigueThreshold,
+            Arg.key(resultKey, resultColor))
     else
-        line2 = string_format(DoF.L["combat.roll_short_no_threshold"],
-            DoF.Utils:Color("FFFF00", total),
+        logLine:Add("combat.roll_short_no_threshold",
+            Arg.color("FFFF00", total),
             roll, modifier,
-            DoF.Utils:Color(resultColor, resultText))
+            Arg.key(resultKey, resultColor))
     end
-    
+
     -- Добавляем информацию об исцелении
     if heal > 0 then
-        line2 = line2 .. DoF.Locale:Format("combat.heal_suffix", DoF.Utils:Color("66FF66", heal))
+        logLine:Add("combat.heal_suffix", Arg.color("66FF66", heal))
     end
-    
+
     -- Лог боя (CombatLog:Add сам решает: записать в журнал или вывести в чат)
-    DoF.Sync:BroadcastCombatLog(line1 .. " " .. line2)
+    logLine:Send()
 
     -- Всплывающий текст для исцеления
     if DoF.UI and heal > 0 then
@@ -1302,8 +1299,7 @@ function DoF.Combat:RestoreTargetEnergy()
 
     -- Лог в боевой журнал
     if DoF.Sync then
-        DoF.Sync:BroadcastCombatLog(string.format(DoF.L["combat.energy_restored_log"],
-            playerName, targetName))
+        DoF.Sync:BroadcastCombatLogKey("combat.energy_restored_log", playerName, targetName)
     end
 
     -- Оповещаем пошаговую систему
@@ -1414,9 +1410,7 @@ function DoF.Combat:ApplyShieldToTarget(targetName, isPlayer, targetGuid)
         end
     end
 
-    DoF.Sync:BroadcastCombatLog(string_format(
-        DoF.L["combat.shield_applied_log"],
-        playerName, targetName))
+    DoF.Sync:BroadcastCombatLogKey("combat.shield_applied_log", playerName, targetName)
     return true
 end
 
@@ -1444,21 +1438,21 @@ function DoF.Combat:ApplyCritHealChoice(choice, healAmount, targetName, isPlayer
             local data = DoF.Units:Get(targetGuid)
             if data then DoF.Units:ModifyHP(targetGuid, data.maxHp) end
         end
-        DoF.Sync:BroadcastCombatLog(string_format(DoF.L["combat.crit_bonus_target"],
-            playerName, DoF.Utils:Color("66FF66", DoF.L["combat.bonus_full_heal"]), targetName))
+        DoF.Sync:BroadcastCombatLogKey("combat.crit_bonus_target",
+            playerName, DoF.Sync.Arg.key("combat.bonus_full_heal", "66FF66"), targetName)
 
     elseif choice == "energy" then
         -- Энергия уже добавлена в меню; применяем обычный крит-хил
         self:ApplyHealToTarget(healAmount, targetName, isPlayer, targetGuid, removeWound)
-        DoF.Sync:BroadcastCombatLog(string_format(DoF.L["combat.crit_bonus"],
-            playerName, DoF.Utils:Color("9966FF", DoF.L["combat.bonus_energy"])))
+        DoF.Sync:BroadcastCombatLogKey("combat.crit_bonus",
+            playerName, DoF.Sync.Arg.key("combat.bonus_energy", "9966FF"))
 
     elseif choice == "shield" then
         -- Щит на цель хила + обычный крит-хил
         self:ApplyShieldToTarget(targetName, isPlayer, targetGuid)
         self:ApplyHealToTarget(healAmount, targetName, isPlayer, targetGuid, removeWound)
-        DoF.Sync:BroadcastCombatLog(string_format(DoF.L["combat.crit_bonus"],
-            playerName, DoF.Utils:Color("66CCFF", DoF.L["combat.bonus_shield_1"])))
+        DoF.Sync:BroadcastCombatLogKey("combat.crit_bonus",
+            playerName, DoF.Sync.Arg.key("combat.bonus_shield_1", "66CCFF"))
     end
 
     -- Усталость лечения
@@ -1546,8 +1540,7 @@ function DoF.Combat:Shield()
 
     if applied then
         -- Лог боя
-        local logLine = string.format(DoF.L["combat.shield_applied_log"], playerName, name)
-        DoF.Sync:BroadcastCombatLog(logLine)
+        DoF.Sync:BroadcastCombatLogKey("combat.shield_applied_log", playerName, name)
 
         -- Кулдаун
         if DoF.Effects then
@@ -1594,43 +1587,15 @@ function DoF.Combat:RemoveWound()
     local total = roll + modifier
     local threshold = 16
     
-    local isSuccess = false
-    local resultText = ""
-    
-    if roll == 1 then
-        isSuccess = false
-        resultText = DoF.L["combat.result.crit_fail"]
+    local isSuccess = roll ~= 1 and (roll == 20 or self:IsSuccess(total, threshold))
+    local resultKey = self:GetRollResultKey(roll, isSuccess)
 
-    elseif roll == 20 then
-        isSuccess = true
-        resultText = DoF.L["combat.result.crit_success"]
-
-    else
-        isSuccess = self:IsSuccess(total, threshold)
-        resultText = isSuccess and DoF.L["combat.result.success"] or DoF.L["combat.result.fail"]
-    end
-    
     -- Форматируем вывод
     local playerName = UnitName("player")
-    local color = DoF.Config.StatColors["Spirit"]
-    
-    local line1 = string.format(DoF.L["combat.tries_remove_wound"],
-        playerName,
-        name)
-    
-    local compareSign = isSuccess and ">=" or "<"
-    local resultColor = isSuccess and "00FF00" or "FF6666"
-    
-    local line2 = string.format(DoF.L["combat.roll_line"],
-        DoF.Utils:Color(color, DoF.L["stats.spirit.label"]),
-        DoF.Utils:Color("FFFF00", total),
-        roll, modifier,
-        compareSign,
-        threshold,
-        DoF.Utils:Color(resultColor, resultText))
-    
+
     -- Лог боя (CombatLog:Add сам решает: записать в журнал или вывести в чат)
-    DoF.Sync:BroadcastCombatLog(line1 .. " " .. line2)
+    self:BuildSpiritRollLogLine("combat.tries_remove_wound", playerName, name,
+        total, roll, modifier, threshold, isSuccess, resultKey):Send()
 
     -- Применяем снятие раны
     if isSuccess then
@@ -1711,39 +1676,14 @@ function DoF.Combat:DispelTarget()
     local total = roll + modifier
     local threshold = 14
 
-    local isSuccess = false
-    local resultText = ""
-
-    if roll == 1 then
-        isSuccess = false
-        resultText = DoF.L["combat.result.crit_fail"]
-    elseif roll == 20 then
-        isSuccess = true
-        resultText = DoF.L["combat.result.crit_success"]
-    else
-        isSuccess = self:IsSuccess(total, threshold)
-        resultText = isSuccess and DoF.L["combat.result.success"] or DoF.L["combat.result.fail"]
-    end
+    local isSuccess = roll ~= 1 and (roll == 20 or self:IsSuccess(total, threshold))
+    local resultKey = self:GetRollResultKey(roll, isSuccess)
 
     -- Форматируем вывод
     local playerName = UnitName("player")
-    local color = DoF.Config.StatColors["Spirit"]
 
-    local line1 = string.format(DoF.L["combat.tries_dispel"],
-        playerName, name)
-
-    local compareSign = isSuccess and ">=" or "<"
-    local resultColor = isSuccess and "00FF00" or "FF6666"
-
-    local line2 = string.format(DoF.L["combat.roll_line"],
-        DoF.Utils:Color(color, DoF.L["stats.spirit.label"]),
-        DoF.Utils:Color("FFFF00", total),
-        roll, modifier,
-        compareSign,
-        threshold,
-        DoF.Utils:Color(resultColor, resultText))
-
-    DoF.Sync:BroadcastCombatLog(line1 .. " " .. line2)
+    self:BuildSpiritRollLogLine("combat.tries_dispel", playerName, name,
+        total, roll, modifier, threshold, isSuccess, resultKey):Send()
 
     -- Применяем диспел
     if isSuccess then
@@ -1756,7 +1696,7 @@ function DoF.Combat:DispelTarget()
             if effectId == "healing_fatigue" and DoF.Combat.HealingFatigue then
                 DoF.Combat.HealingFatigue[name] = nil
             end
-            DoF.Sync:BroadcastCombatLog(DoF.Locale:Format("combat.dispel_log", playerName, DoF.Utils:Color("00FF00", def.name), name))
+            DoF.Sync:BroadcastCombatLogKey("combat.dispel_log", playerName, DoF.Sync.Arg.effect(effectId), name)
         end, nil, true)
     else
         DoF.Utils:Error(DoF.L["errors.dispel_failed"])
@@ -1828,39 +1768,14 @@ function DoF.Combat:PurgeTarget()
     local threshold = 14
     local npcName = npcData.name or DoF.L["combat.npc_fallback"]
 
-    local isSuccess = false
-    local resultText = ""
-
-    if roll == 1 then
-        isSuccess = false
-        resultText = DoF.L["combat.result.crit_fail"]
-    elseif roll == 20 then
-        isSuccess = true
-        resultText = DoF.L["combat.result.crit_success"]
-    else
-        isSuccess = self:IsSuccess(total, threshold)
-        resultText = isSuccess and DoF.L["combat.result.success"] or DoF.L["combat.result.fail"]
-    end
+    local isSuccess = roll ~= 1 and (roll == 20 or self:IsSuccess(total, threshold))
+    local resultKey = self:GetRollResultKey(roll, isSuccess)
 
     -- Форматируем вывод
     local playerName = UnitName("player")
-    local color = DoF.Config.StatColors["Spirit"]
 
-    local line1 = string.format(DoF.L["combat.tries_purge"],
-        playerName, npcName)
-
-    local compareSign = isSuccess and ">=" or "<"
-    local resultColor = isSuccess and "00FF00" or "FF6666"
-
-    local line2 = string.format(DoF.L["combat.roll_line"],
-        DoF.Utils:Color(color, DoF.L["stats.spirit.label"]),
-        DoF.Utils:Color("FFFF00", total),
-        roll, modifier,
-        compareSign,
-        threshold,
-        DoF.Utils:Color(resultColor, resultText))
-
-    DoF.Sync:BroadcastCombatLog(line1 .. " " .. line2)
+    self:BuildSpiritRollLogLine("combat.tries_purge", playerName, npcName,
+        total, roll, modifier, threshold, isSuccess, resultKey):Send()
 
     -- Применяем пурж
     if isSuccess then
@@ -1870,10 +1785,10 @@ function DoF.Combat:PurgeTarget()
             if isPassive then
                 DoF.Passives:Remove(guid, effectId)
                 if DoF.Sync then DoF.Sync:BroadcastUnit(guid, DoF.Units:Get(guid)) end
-                DoF.Sync:BroadcastCombatLog(DoF.Locale:Format("combat.purge_passive_log", playerName, DoF.Utils:Color("FF8800", def.name), npcName))
+                DoF.Sync:BroadcastCombatLogKey("combat.purge_passive_log", playerName, DoF.Sync.Arg.effect(effectId), npcName)
             else
                 DoF.Effects:Remove("npc", guid, effectId)
-                DoF.Sync:BroadcastCombatLog(DoF.Locale:Format("combat.dispel_log", playerName, DoF.Utils:Color("00FF00", def.name), npcName))
+                DoF.Sync:BroadcastCombatLogKey("combat.dispel_log", playerName, DoF.Sync.Arg.effect(effectId), npcName)
             end
         end, nil, true)
     else
@@ -1901,18 +1816,13 @@ function DoF.Combat:Check(stat)
     local roll = DoF.Utils:Roll(1, 20)
     local total = roll + modifier
     
-    local color = DoF.Config.StatColors[stat] or "FFFFFF"
+    local Arg = DoF.Sync.Arg
     local playerName = UnitName("player")
-    
-    local line1 = string.format(DoF.L["combat.check_line"],
-        playerName,
-        DoF.Utils:Color(color, DoF.Config.StatNames[stat]))
-    
-    local line2 = string.format(DoF.L["combat.roll_result_simple"],
-        DoF.Utils:Color("FFFF00", total),
-        roll, modifier)
-    
-    DoF.Sync:BroadcastCombatLog(line1 .. " " .. line2)
+
+    DoF.Sync:NewLogLine()
+        :Add("combat.check_line", playerName, Arg.stat(stat))
+        :Add("combat.roll_result_simple", Arg.color("FFFF00", total), roll, modifier)
+        :Send()
 end
 
 -- Защита, контратака, мастер-команды вынесены в Combat/Defense.lua

@@ -360,11 +360,10 @@ function DoF.Passives:ProcessRoundPassives()
                     local healed = newHP - data.hp
                     if healed > 0 then
                         DoF.Units:ModifyHP(guid, newHP)
-                        DoF.Sync:BroadcastCombatLog(string_format(
-                            DoF.L["passives.msg.regenerates"],
-                            DoF.Utils:Color("FFCC00", data.name),
-                            DoF.Utils:Color("66FF66", healed),
-                            newHP, data.maxHp))
+                        DoF.Sync:BroadcastCombatLogKey("passives.msg.regenerates",
+                            DoF.Sync.Arg.color("FFCC00", data.name),
+                            DoF.Sync.Arg.color("66FF66", healed),
+                            newHP, data.maxHp)
                     end
                 end
             end
@@ -399,12 +398,11 @@ function DoF.Passives:TrackAdaptation(guid, attackStat)
     if tracker.count == 2 then
         local npcName = data.name or "NPC"
         local defenseStat = DoF.Config.AttackVsDefense[attackStat]
-        DoF.Sync:BroadcastCombatLog(string_format(
-            DoF.L["passives.msg.adapts"],
-            DoF.Utils:Color("66CCFF", npcName),
-            DoF.Utils:Color("FFCC00", DoF.Config.StatNames[attackStat] or attackStat),
+        DoF.Sync:BroadcastCombatLogKey("passives.msg.adapts",
+            DoF.Sync.Arg.color("66CCFF", npcName),
+            DoF.Sync.Arg.stat(attackStat),
             adaptData.value or 2,
-            DoF.Config.StatNames[defenseStat] or defenseStat))
+            DoF.Sync.Arg.stat(defenseStat, ""))
     end
 
     -- Синхронизация трекера всем игрокам
@@ -568,10 +566,8 @@ function DoF.Passives:ApplyDeathExplosion(frame)
     for _, targetName in ipairs(targets) do
         local dmg = math.random(dmgMin, dmgMax)
         DoF.Sync:ModifyPlayerHP(targetName, -dmg)
-        DoF.Sync:BroadcastCombatLog(string_format(
-            DoF.L["passives.msg.explosion"],
-            targetName,
-            DoF.Utils:Color("FF0000", dmg)))
+        DoF.Sync:BroadcastCombatLogKey("passives.msg.explosion", targetName,
+            DoF.Sync.Arg.color("FF0000", dmg))
     end
 
     frame:Hide()

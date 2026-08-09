@@ -165,6 +165,9 @@ DoF.Locale:Register("enUS", {
     ["combat.def.attacks"] = "%s attacks %s.",
     ["combat.def.defends_line"] = "%s defends with %s: %s (%d+%d) %s %d - %s",
     ["combat.def.debuff_suffix"] = "%s for %s rnd",
+    -- Same suffix as its own log segment: colour and leading space live inside
+    -- the string, because the receiver is the one joining the pieces.
+    ["combat.def.debuff_suffix_log"] = " |cFFCC8833%s for %s rnd|r",
     ["combat.def.no_defense_line"] = "%s failed to defend in time - %s!",
     ["combat.def.time_up_damage"] = "Time is up! Damage taken: %s",
     ["combat.def.crit_defense_bonus"] = "%s picks a defense crit: %s",

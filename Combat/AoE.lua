@@ -71,32 +71,21 @@ function DoF.Combat:StartAoEAttack(stat)
     local roll = DoF.Utils:Roll(1, 20)
     local maxTargets = DoF.Config.AOE_MAX_TARGETS
     local targets = math_random(DoF.Config.AOE_MIN_TARGETS, maxTargets)
-    local statColor = DoF.Config.StatColors[stat] or "FFFFFF"
-    local statName = DoF.Config.StatNames[stat] or stat
+    local Arg = DoF.Sync.Arg
 
     -- Крит (20) — возвращаем энергию
-    if roll == 20 then
+    local isCritRoll = roll == 20
+    DoF.Sync:NewLogLine()
+        :Add("combat.aoe.activates", playerName, Arg.stat(stat))
+        :Add(isCritRoll and "combat.aoe.roll_crit" or "combat.aoe.roll_success",
+            Arg.color("FFFF00", roll),
+            Arg.key(isCritRoll and "combat.result.crit_success" or "combat.result.success_excl", "00FF00"),
+            Arg.color("FFD700", targets))
+        :Send()
 
-        local line1 = string_format(DoF.L["combat.aoe.activates"],
-            playerName, DoF.Utils:Color(statColor, statName))
-        local line2 = string_format(DoF.L["combat.aoe.roll_crit"],
-            DoF.Utils:Color("FFFF00", roll),
-            DoF.Utils:Color("00FF00", DoF.L["combat.result.crit_success"]),
-            DoF.Utils:Color("FFD700", targets))
-
-        DoF.Sync:BroadcastCombatLog(line1 .. " " .. line2)
-
+    if isCritRoll then
         -- Возвращаем энергию за крит
         DoF.Stats:AddEnergy(DoF.Config.ENERGY_GAIN_CRIT_CHOICE)
-    else
-        local line1 = string_format(DoF.L["combat.aoe.activates"],
-            playerName, DoF.Utils:Color(statColor, statName))
-        local line2 = string_format(DoF.L["combat.aoe.roll_success"],
-            DoF.Utils:Color("FFFF00", roll),
-            DoF.Utils:Color("00FF00", DoF.L["combat.result.success_excl"]),
-            DoF.Utils:Color("FFD700", targets))
-
-        DoF.Sync:BroadcastCombatLog(line1 .. " " .. line2)
     end
 
     -- Активируем режим AoE
@@ -162,18 +151,14 @@ function DoF.Combat:AoEHit()
     local damage = self:CalculateDamage(isCrit)
 
     local playerName = UnitName("player")
-    local statColor = DoF.Config.StatColors[stat] or "FFFFFF"
-    local statName = DoF.Config.StatNames[stat] or stat
+    local Arg = DoF.Sync.Arg
 
-    local resultText = isCrit and DoF.Utils:Color("00FF00", DoF.L["combat.result.crit_short"]) or DoF.Utils:Color("00FF00", DoF.L["combat.result.hit_short"])
-    local line = string_format(DoF.L["combat.aoe.attack_log"],
+    DoF.Sync:BroadcastCombatLogKey("combat.aoe.attack_log",
         playerName,
-        DoF.Utils:Color(statColor, statName),
+        Arg.stat(stat),
         name,
-        resultText,
-        DoF.Utils:Color("FF6666", damage))
-
-    DoF.Sync:BroadcastCombatLog(line)
+        Arg.key(isCrit and "combat.result.crit_short" or "combat.result.hit_short", "00FF00"),
+        Arg.color("FF6666", damage))
 
     -- Всплывающий текст
     local floatType = isCrit and "crit_success" or "hit"
@@ -316,29 +301,21 @@ function DoF.Combat:StartAoEHeal()
     local maxTargets = DoF.Config.AOE_MAX_TARGETS
     local targets = math_random(DoF.Config.AOE_MIN_TARGETS, maxTargets)
 
+    local Arg = DoF.Sync.Arg
+
     -- Крит (20) — возвращаем энергию
-    if roll == 20 then
+    local isCritRoll = roll == 20
+    DoF.Sync:NewLogLine()
+        :Add("combat.aoe.activates_heal", playerName)
+        :Add(isCritRoll and "combat.aoe.roll_crit" or "combat.aoe.roll_success",
+            Arg.color("FFFF00", roll),
+            Arg.key(isCritRoll and "combat.result.crit_success" or "combat.result.success_excl", "00FF00"),
+            Arg.color("FFD700", targets))
+        :Send()
 
-        local line1 = string_format(DoF.L["combat.aoe.activates_heal"],
-            playerName)
-        local line2 = string_format(DoF.L["combat.aoe.roll_crit"],
-            DoF.Utils:Color("FFFF00", roll),
-            DoF.Utils:Color("00FF00", DoF.L["combat.result.crit_success"]),
-            DoF.Utils:Color("FFD700", targets))
-
-        DoF.Sync:BroadcastCombatLog(line1 .. " " .. line2)
-
+    if isCritRoll then
         -- Возвращаем энергию за крит
         DoF.Stats:AddEnergy(DoF.Config.ENERGY_GAIN_CRIT_CHOICE)
-    else
-        local line1 = string_format(DoF.L["combat.aoe.activates_heal"],
-            playerName)
-        local line2 = string_format(DoF.L["combat.aoe.roll_success"],
-            DoF.Utils:Color("FFFF00", roll),
-            DoF.Utils:Color("00FF00", DoF.L["combat.result.success_excl"]),
-            DoF.Utils:Color("FFD700", targets))
-
-        DoF.Sync:BroadcastCombatLog(line1 .. " " .. line2)
     end
 
     -- Активируем режим AoE хила
@@ -399,14 +376,12 @@ function DoF.Combat:AoEHealTarget()
     end
 
     local playerName = UnitName("player")
-    local statColor = DoF.Config.StatColors["Spirit"] or "FFE066"
+    local Arg = DoF.Sync.Arg
 
-    local resultText = isCrit and DoF.Utils:Color("00FF00", DoF.L["combat.result.crit_short"]) or DoF.Utils:Color("00FF00", DoF.L["combat.result.success_excl"])
-    local line = string_format(DoF.L["combat.aoe.heal_log"],
-        playerName, name, resultText,
-        DoF.Utils:Color("66FF66", heal))
-
-    DoF.Sync:BroadcastCombatLog(line)
+    DoF.Sync:BroadcastCombatLogKey("combat.aoe.heal_log",
+        playerName, name,
+        Arg.key(isCrit and "combat.result.crit_short" or "combat.result.success_excl", "00FF00"),
+        Arg.color("66FF66", heal))
 
     -- Всплывающий текст
     local floatType = isCrit and "crit_heal" or "heal"
@@ -593,12 +568,14 @@ function DoF.Combat:StartAoEBuff(effectId)
     -- AoE бафф — гарантированный успех (без броска)
     local targets = DoF.Config.AOE_MAX_TARGETS
     local playerName = UnitName("player")
+    local Arg = DoF.Sync.Arg
+    -- Нужен ниже для локального сообщения игроку (в эфир идёт Arg.effect)
     local buffColor = DoF.Effects:GetColorHex(def.color)
 
-    local line1 = string_format(DoF.L["combat.aoe.activates"], playerName, DoF.Utils:Color(buffColor, def.name))
-    local line2 = string_format(DoF.L["combat.aoe.targets_line"], DoF.Utils:Color("FFD700", targets))
-
-    DoF.Sync:BroadcastCombatLog(line1 .. " " .. line2)
+    DoF.Sync:NewLogLine()
+        :Add("combat.aoe.activates", playerName, Arg.effect(effectId))
+        :Add("combat.aoe.targets_line", Arg.color("FFD700", targets))
+        :Send()
 
     -- Ставим кулдаун
     local cooldownRounds = def.aoeCooldownDuration or def.cooldownDuration or 5
@@ -774,9 +751,8 @@ function DoF.Combat:StartAoEShield()
 
     local targets = DoF.Config.SHIELD_AOE_MAX_TARGETS
 
-    local logLine = string_format(DoF.L["combat.aoe.activates_shield"],
-        playerName, DoF.Utils:Color("FFD700", targets))
-    DoF.Sync:BroadcastCombatLog(logLine)
+    DoF.Sync:BroadcastCombatLogKey("combat.aoe.activates_shield",
+        playerName, DoF.Sync.Arg.color("FFD700", targets))
 
     -- Активируем режим AoE щита
     self.AoEShieldState.active = true

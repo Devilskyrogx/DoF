@@ -323,7 +323,7 @@ function DoF.TurnSystem:StartNPCTurn()
                     -- Эффект наложен в эту NPC-фазу: активируем без тика длительности
                     stunEffect.pendingActivation = false
                     if DoF.Sync then
-                        DoF.Sync:BroadcastCombatLog(DoF.Locale:Format("combat.turn.stun_starts", DoF.Utils:Color("FFFF00", DoF.L["effects.stun.name"]), DoF.Utils:Color("FFFFFF", p.name)))
+                        DoF.Sync:BroadcastCombatLogKey("combat.turn.stun_starts", DoF.Sync.Arg.key("effects.stun.name", "FFFF00"), DoF.Sync.Arg.color("FFFFFF", p.name))
                     end
                 else
                     DoF.Effects:TickStun(p.name)
@@ -495,7 +495,7 @@ function DoF.TurnSystem:StartCurrentTurn(skipCount)
         end
 
         if DoF.Sync then
-            DoF.Sync:BroadcastCombatLog(DoF.Locale:Format("combat.turn.skip_critical", current.name))
+            DoF.Sync:BroadcastCombatLogKey("combat.turn.skip_critical", current.name)
         end
 
         local myGUID = UnitGUID("player")
@@ -524,7 +524,7 @@ function DoF.TurnSystem:StartCurrentTurn(skipCount)
 
         -- Игрок оглушён — пропускаем его ход
         if DoF.Sync then
-            DoF.Sync:BroadcastCombatLog(DoF.Locale:Format("combat.turn.skip_stun", current.name, remainingRounds))
+            DoF.Sync:BroadcastCombatLogKey("combat.turn.skip_stun", current.name, remainingRounds)
         end
 
         -- Уведомляем игрока если это его ход

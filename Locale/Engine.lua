@@ -111,6 +111,17 @@ function DoF.Locale:Get(key)
     return "[" .. tostring(key) .. "]"
 end
 
+-- Есть ли ключ хоть в одном языке. Нужно там, где отсутствие ключа — это не
+-- недоработка перевода, а сообщение от клиента более новой версии: журнал боя
+-- принимает ключ по сети и должен уметь отличить «нет перевода» от «нет ключа».
+function DoF.Locale:Has(key)
+    local current = self.data[self.current]
+    if current and current[key] then return true end
+    local fallback = self.data[self.fallback]
+    if fallback and fallback[key] then return true end
+    return false
+end
+
 -- Основная точка входа: DoF.L["ui.npc_library"]
 DoF.L = setmetatable({}, {
     __index = function(_, key)

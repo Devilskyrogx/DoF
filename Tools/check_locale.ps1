@@ -49,10 +49,26 @@ $sources = Get-ChildItem -Path $Root -Recurse -File -Include *.lua |
 foreach ($file in $sources) {
     $relative = $file.FullName.Substring($Root.Length).TrimStart('\')
     $text = [System.IO.File]::ReadAllText($file.FullName, $utf8)
-    foreach ($m in [regex]::Matches($text, 'DoF\.L\["([^"]+)"\]|DoF\.Locale:(?:Format|Get)\("([^"]+)"')) {
-        $key = if ($m.Groups[1].Success) { $m.Groups[1].Value } else { $m.Groups[2].Value }
-        if (-not $used.ContainsKey($key)) { $used[$key] = @() }
-        $used[$key] += $relative
+    # Ключи достаются пятью способами. Первые два — обычное обращение к локали.
+    # Остальные три появились вместе с журналом боя, который передаёт по сети
+    # ключ, а не текст: там ключ живёт в строковом литерале, и без разбора этих
+    # форм проверка перестала бы видеть добрую половину используемых ключей.
+    # Хвост (?=\s*[,)]) требует, чтобы литерал был аргументом целиком. Без него
+    # в улов попадает префикс собранного ключа: Arg.key("core.action." .. type)
+    # дал бы несуществующий ключ "core.action.".
+    $patterns = @(
+        'DoF\.L\["([^"]+)"\]',                                    # DoF.L["key"]
+        'DoF\.Locale:(?:Format|Get|Has)\("([^"]+)"(?=\s*[,)])',   # Locale:Format("key", ...)
+        'BroadcastCombatLogKey\(\s*"([^"]+)"(?=\s*[,)])',         # запись журнала одним куском
+        ':Add\(\s*"([^"]+)"(?=\s*[,)])',                          # сегмент составной записи
+        'Arg\.keyf?\(\s*"([^"]+)"(?=\s*[,)])'                     # ключ как аргумент записи
+    )
+    foreach ($p in $patterns) {
+        foreach ($m in [regex]::Matches($text, $p)) {
+            $key = $m.Groups[1].Value
+            if (-not $used.ContainsKey($key)) { $used[$key] = @() }
+            $used[$key] += $relative
+        }
     }
 }
 
