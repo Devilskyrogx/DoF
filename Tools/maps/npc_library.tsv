@@ -1,0 +1,84 @@
+Data\NPCLibrary.lua	Новый NPC	npc.new_template
+Data\NPCLibrary.lua	Атака	npc.attack_default
+Data\NPCLibrary.lua	Шаблон не найден!	errors.template_not_found
+Data\NPCLibrary.lua	Выберите цель!	errors.select_target
+Data\NPCLibrary.lua	Выберите NPC, а не игрока!	errors.select_npc_not_player
+Data\NPCLibrary.lua	Атака не найдена!	errors.attack_not_found
+Data\NPCLibrary.lua	Выберите цель-игрока!	errors.select_player_target
+Data\NPCLibrary.lua	Атаковать можно только игрока!	errors.attack_players_only
+UI\NPCLibrary.lua	Ст	npc.stat.fort_short
+UI\NPCLibrary.lua	Сн	npc.stat.reflex_short
+UI\NPCLibrary.lua	В	npc.stat.will_short
+UI\NPCLibrary.lua	Гб	npc.stat.hybrid_short
+UI\NPCLibrary.lua	Оглуш.	npc.debuff.stun
+UI\NPCLibrary.lua	Осл.урона	npc.debuff.weakness_damage
+UI\NPCLibrary.lua	Осл.леч.	npc.debuff.weakness_healing
+UI\NPCLibrary.lua	Уязв.Ст	npc.debuff.vuln_fortitude
+UI\NPCLibrary.lua	Уязв.Сн	npc.debuff.vuln_reflex
+UI\NPCLibrary.lua	Уязв.В	npc.debuff.vuln_will
+UI\NPCLibrary.lua	Пер.урон	npc.debuff.dot
+UI\NPCLibrary.lua	дебафф	npc.debuff.generic
+UI\NPCLibrary.lua	Библиотека NPC	xml.npc_library
+UI\NPCLibrary.lua	Поиск...	npc.ui.search
+UI\NPCLibrary.lua	+ Создать	npc.ui.create
+UI\NPCLibrary.lua	--- Атаки ---	npc.ui.attacks_divider
+UI\NPCLibrary.lua	Применить к цели	npc.ui.apply_to_target
+UI\NPCLibrary.lua	Редакт.	npc.ui.edit
+UI\NPCLibrary.lua	Копия	npc.ui.duplicate
+UI\NPCLibrary.lua	Удалить	npc.ui.delete
+UI\NPCLibrary.lua	Точно?	npc.ui.delete_confirm
+UI\NPCLibrary.lua	Нет шаблонов	npc.ui.no_templates
+UI\NPCLibrary.lua	Без категории	npc.ui.no_category
+UI\NPCLibrary.lua	Выберите шаблон	npc.ui.choose_template
+UI\NPCLibrary.lua	Атака	npc.attack_default
+UI\NPCLibrary_Edit.lua	Стойкость	stats.fortitude.label
+UI\NPCLibrary_Edit.lua	Сноровка	stats.reflex.label
+UI\NPCLibrary_Edit.lua	Воля	stats.will.label
+UI\NPCLibrary_Edit.lua	Гибрид	ui.dlg.hybrid
+UI\NPCLibrary_Edit.lua	Нет	ui.common.none
+UI\NPCLibrary_Edit.lua	Оглушение	effects.stun.name
+UI\NPCLibrary_Edit.lua	Ослабл. урона	ui.npcdlg.debuff_weakness_damage
+UI\NPCLibrary_Edit.lua	Ослабл. лечения	ui.npcdlg.debuff_weakness_healing
+UI\NPCLibrary_Edit.lua	Уязв. (Стойк.)	ui.npcdlg.debuff_vuln_fortitude
+UI\NPCLibrary_Edit.lua	Уязв. (Снор.)	ui.npcdlg.debuff_vuln_reflex
+UI\NPCLibrary_Edit.lua	Уязв. (Воля)	ui.npcdlg.debuff_vuln_will
+UI\NPCLibrary_Edit.lua	Период. урон	ui.npcdlg.debuff_dot
+UI\NPCLibrary_Edit.lua	Урон:	npc.edit.damage_label
+UI\NPCLibrary_Edit.lua	Порог:	npc.edit.threshold_label
+UI\NPCLibrary_Edit.lua	Защ:	npc.edit.defense_label
+UI\NPCLibrary_Edit.lua	Деб:	npc.edit.debuff_label
+UI\NPCLibrary_Edit.lua	Зн:	npc.edit.debuff_value_label
+UI\NPCLibrary_Edit.lua	Р:	npc.edit.debuff_duration_label
+UI\NPCLibrary_Edit.lua	Режим	npc.field.mode
+UI\NPCLibrary_Edit.lua	Шанс%	npc.field.chance
+UI\NPCLibrary_Edit.lua	Мин	npc.field.damageMin
+UI\NPCLibrary_Edit.lua	Макс	npc.field.damageMax
+UI\NPCLibrary_Edit.lua	Порог	npc.field.threshold
+UI\NPCLibrary_Edit.lua	Урон/р	npc.field.dotValue
+UI\NPCLibrary_Edit.lua	Раунды	npc.field.dotDuration
+UI\NPCLibrary_Edit.lua	Значение	npc.field.value
+UI\NPCLibrary_Edit.lua	Стан(р)	npc.field.stunDuration
+UI\NPCLibrary_Edit.lua	Защита	npc.field.defenseStat
+UI\NPCLibrary_Edit.lua	Мгн. урон	npc.field.instantDamage
+UI\NPCLibrary_Edit.lua	Гарант.	npc.edit.mode_guaranteed
+UI\NPCLibrary_Edit.lua	Шанс	npc.edit.mode_chance
+UI\NPCLibrary_Edit.lua	Обычный	npc.edit.check_normal
+UI\NPCLibrary_Edit.lua	Снимаемая	ui.dlg.purgeable
+UI\NPCLibrary_Edit.lua	Не снимаемая	ui.dlg.unpurgeable
+UI\NPCLibrary_Edit.lua	Мгн. урон: ВКЛ	npc.edit.instant_on
+UI\NPCLibrary_Edit.lua	Мгн. урон: выкл	npc.edit.instant_off
+UI\NPCLibrary_Edit.lua	Название:	npc.edit.name_label
+UI\NPCLibrary_Edit.lua	Категория:	npc.edit.category_label
+UI\NPCLibrary_Edit.lua	Ст:	npc.edit.fort_label
+UI\NPCLibrary_Edit.lua	Сн:	npc.edit.reflex_label
+UI\NPCLibrary_Edit.lua	В:	npc.edit.will_label
+UI\NPCLibrary_Edit.lua	Атаки	npc.edit.attacks_header
+UI\NPCLibrary_Edit.lua	Пассивки	npc.edit.passives_header
+UI\NPCLibrary_Edit.lua	+ Добавить	npc.edit.add
+UI\NPCLibrary_Edit.lua	Сохранить	npc.edit.save
+UI\NPCLibrary_Edit.lua	Отмена	ui.common.cancel
+UI\NPCLibrary_Edit.lua	Атака	npc.attack_default
+UI\NPCLibrary_Edit.lua	Шаблон не найден!	errors.template_not_found
+UI\NPCLibrary_Edit.lua	Редактировать шаблон	npc.edit.title_edit
+UI\NPCLibrary_Edit.lua	Новый шаблон	npc.edit.title_new
+UI\NPCLibrary_Edit.lua	Введите название шаблона!	errors.enter_template_name

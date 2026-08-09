@@ -1,0 +1,54 @@
+UI\Nameplates.lua	Крит. провал!	ui.nameplate.crit_fail
+UI\Nameplates.lua	Промах!	ui.nameplate.miss
+UI\Effects.lua	Дебафф	ui.effect.debuff
+UI\Effects.lua	Лечит	ui.effect.heals
+UI\Effects.lua	Урон	ui.effect.damage
+UI\CombatLog.lua	Бой	ui.combatlog.tab_battle
+UI\CombatLog.lua	Мастер	ui.combatlog.tab_master
+UI\CombatLog.lua	Очистить	ui.combatlog.clear
+UI\CombatLog.lua	Журнал боя	ui.combatlog.title_battle
+UI\CombatLog.lua	Журнал мастера	ui.combatlog.title_master
+UI\CombatLog.lua	|cFF666666Журнал пуст|r	ui.combatlog.empty
+UI\CombatLog.lua	Только для ведущего!	errors.gm_only
+UI\CombatLog.lua	Журнал боя выключен в настройках. Включите его в Интерфейс -> Модификации -> ABS	errors.combatlog_disabled
+UI\MainFrame.lua	Выбор роли	ui.role.choose_title
+UI\MainFrame.lua	Нажмите, чтобы выбрать роль	ui.role.choose_hint
+UI\MainFrame.lua	Только ведущий может открыть панель управления!	errors.gm_panel_only
+UI\MainFrame.lua	Сила	stats.strength.label
+UI\MainFrame.lua	Ловкость	stats.dexterity.label
+UI\MainFrame.lua	Интеллект	stats.intelligence.label
+UI\MainFrame.lua	Дух	stats.spirit.label
+UI\MainFrame.lua	Стойкость	stats.fortitude.label
+UI\MainFrame.lua	Сноровка	stats.reflex.label
+UI\MainFrame.lua	Воля	stats.will.label
+UI\MainFrame.lua	Атакующая, против стойкости. Грубая мощь, способность сокрушить защиту напором. Воины, паладины, бойцы ближнего боя. Вне боя — физическое превосходство: сломать дверь, сдвинуть валун, впечатлить размахом.	stats.strength.desc
+UI\MainFrame.lua	Атакующая, против сноровки. Скорость, точность, умение найти брешь. Лучники, разбойники, дуэлянты. Вне боя — реакция, координация, умение проскользнуть незамеченным.	stats.dexterity.desc
+UI\MainFrame.lua	Атакующий, против воли. Сила разума, обращённая в оружие: заклинания, ментальное давление, тактика. Маги, чернокнижники. Вне боя — эрудиция, хитрость, умение убедить аргументом.	stats.intelligence.desc
+UI\MainFrame.lua	Характеристика целителя, без противоборства. Связь с верой, светом, жизнью. Определяет силу исцеления. Вне боя — духовный авторитет, сила убеждения, близость к божеству.	stats.spirit.desc
+UI\MainFrame.lua	Защитная, против силы. Способность принять удар и устоять. Крепкое тело, выносливость. Вне боя — здоровье, терпение к боли, яду, холоду.	stats.fortitude.desc
+UI\MainFrame.lua	Защитная, против ловкости. Мышечная память, чутьё на опасность. Уклонение, парирование, шаг в сторону до того, как прилетело. Вне боя — бдительность, умение почуять засаду.	stats.reflex.desc
+UI\MainFrame.lua	Защитная, против интеллекта. Ментальная крепость, щит разума. Сопротивление магии, иллюзиям, страху. Вне боя — решимость, стойкость к манипуляциям и давлению.	stats.will.desc
+UI\CharacterSidebar.lua	Здоровье/Энергия	ui.sidebar.health_energy
+UI\CharacterSidebar.lua	Характеристики	ui.sidebar.stats
+UI\CharacterSidebar.lua	Урон/Исцеление	ui.sidebar.damage_healing
+UI\CharacterSidebar.lua	Урон	ui.sidebar.damage_label
+UI\CharacterSidebar.lua	Распределить	ui.sidebar.distribute
+UI\CharacterSidebar.lua	Меню ведущего	ui.sidebar.gm_menu
+UI\CharacterSidebar.lua	Открыть панель управления боем	ui.sidebar.gm_menu_hint
+UI\CharacterSidebar.lua	CharacterSidebar: Blizzard PaperDollFrame недоступен, инициализация отложена	errors.sidebar_paperdoll_missing
+UI\TurnQueue.lua	|cFF66FF66+Игрок|r	ui.queue.add_player
+UI\TurnQueue.lua	Вн.ход	ui.queue.extra_turn_short
+UI\TurnQueue.lua	Пропустить ход	ui.queue.skip_turn
+UI\TurnQueue.lua	Убрать из боя	ui.queue.remove_from_combat
+UI\TurnQueue.lua	Цель должна быть игроком!	errors.target_must_be_player
+UI\MinimapButton.lua	ABS: настройки	ui.minimap.settings
+UI\MinimapButton.lua	ЛКМ - открыть панель ABS	ui.minimap.tooltip_left
+UI\MinimapButton.lua	Shift+ЛКМ - панель ведущего	ui.minimap.tooltip_shift_left
+UI\MinimapButton.lua	ПКМ - меню настроек	ui.minimap.tooltip_right
+UI\MinimapButton.lua	Вы мастер	ui.minimap.you_are_gm
+UI\MinimapButton.lua	Панель действий	ui.minimap.action_bar
+UI\MinimapButton.lua	Фрейм игрока	ui.minimap.player_frame
+UI\MinimapButton.lua	Фрейм цели (NPC)	ui.minimap.target_frame
+UI\MinimapButton.lua	Заблокировать фреймы	ui.minimap.lock_frames
+UI\MinimapButton.lua	Разблокировать фреймы	ui.minimap.unlock_frames
+UI\MinimapButton.lua	Закрыть	ui.minimap.close

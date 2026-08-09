@@ -1,0 +1,494 @@
+<Ui xmlns="http://www.blizzard.com/wow/ui/">
+
+<!-- ═══════════════════════════════════════════════════════════════════════════
+     TEMPLATES
+     ═══════════════════════════════════════════════════════════════════════════ -->
+
+<!-- GM Button Template (наследуется от UIPanelButtonTemplate — игровой золотой стиль) -->
+<Button name="DoF_GMButtonTemplate" inherits="UIPanelButtonTemplate" virtual="true">
+    <Size x="88" y="24"/>
+    <NormalFont style="GameFontNormalSmall"/>
+    <HighlightFont style="GameFontHighlightSmall"/>
+</Button>
+
+<!-- GM Button Wide Template (наследуется от UIPanelButtonTemplate) -->
+<Button name="DoF_GMButtonWideTemplate" inherits="UIPanelButtonTemplate" virtual="true">
+    <Size x="180" y="24"/>
+    <NormalFont style="GameFontNormalSmall"/>
+    <HighlightFont style="GameFontHighlightSmall"/>
+</Button>
+
+<!-- Dialog Template — стиль главного меню игры (GameMenuFrame):
+     NineSlice-рамка DialogBorderTemplate (мраморный фон UI-DialogBox-Background)
+     + выступающий сверху DialogHeaderTemplate (diamond-metal шапка).
+     Заголовок: self.Header:Setup("Название"). Крестик: self.CloseButton. -->
+<Frame name="DoF_DialogTemplate" virtual="true"
+       movable="true" enableMouse="true" frameStrata="FULLSCREEN_DIALOG"
+       toplevel="true" hidden="true">
+    <Frames>
+        <Frame parentKey="Border" inherits="DialogBorderTemplate"/>
+        <Frame parentKey="Header" inherits="DialogHeaderTemplate"/>
+        <Button parentKey="CloseButton" inherits="UIPanelCloseButtonNoScripts">
+            <Size x="24" y="24"/>
+            <Anchors><Anchor point="TOPRIGHT" x="-4" y="-4"/></Anchors>
+            <Scripts><OnClick>self:GetParent():Hide()</OnClick></Scripts>
+        </Button>
+    </Frames>
+    <Scripts>
+        <OnLoad>
+            self:RegisterForDrag("LeftButton")
+        </OnLoad>
+        <OnDragStart>self:StartMoving()</OnDragStart>
+        <OnDragStop>self:StopMovingOrSizing()</OnDragStop>
+    </Scripts>
+</Frame>
+
+
+<!-- ═══════════════════════════════════════════════════════════════════════════
+     GM PANEL
+     ═══════════════════════════════════════════════════════════════════════════ -->
+<Frame name="DoF_GMPanel" parent="UIParent" inherits="ButtonFrameTemplate" movable="true" enableMouse="true" frameStrata="DIALOG" toplevel="true" hidden="true">
+<Size x="280" y="400"/>
+<Anchors><Anchor point="CENTER" relativeTo="UIParent" relativePoint="CENTER" x="0" y="0"/></Anchors>
+<Scripts>
+    <OnLoad>
+        ButtonFrameTemplate_HidePortrait(self)
+        if self.TitleText then self.TitleText:SetText(DoF_L_GM_PANEL_TITLE) end
+        self:RegisterForDrag("LeftButton")
+        -- Иконка молотка слева от заголовка
+        local icon = self:CreateTexture(nil, "OVERLAY")
+        icon:SetTexture("Interface\\ICONS\\INV_Hammer_20")
+        icon:SetSize(18, 18)
+        if self.TitleText then
+            icon:SetPoint("RIGHT", self.TitleText, "LEFT", -4, 0)
+        else
+            icon:SetPoint("TOPLEFT", self, "TOPLEFT", 60, -4)
+        end
+        self.TitleIcon = icon
+
+        -- Классовый фон Inset: тот же атлас что в боковой панели аддона
+        -- (UI-Character-Info-&lt;CLASS&gt;-BG, резолвится в PaperDollInfoPart1/2).
+        if self.Inset then
+            local bg = self.Inset:CreateTexture(nil, "BACKGROUND", nil, 2)
+            bg:SetAllPoints(self.Inset)
+            bg:SetAlpha(0.45)
+            local _, class = UnitClass("player")
+            local applied = false
+            if class then
+                local ok = pcall(bg.SetAtlas, bg, "UI-Character-Info-" .. class .. "-BG", true)
+                if ok and bg:GetAtlas() then applied = true end
+            end
+            if not applied then
+                bg:SetTexture(nil)
+            end
+            self.InsetBg = bg
+        end
+
+        -- Общий ScrollFrame внутри Inset. Симметричные отступы 22/22 —
+        -- ScrollBar UIPanelScrollBarTemplate якорится на +6 вправо от scroll:TOPRIGHT
+        -- и имеет ширину ~16, итого 22 — идеально вписывается в правый отступ.
+        local scroll = CreateFrame("ScrollFrame", "DoF_GMPanel_Scroll", self, "UIPanelScrollFrameTemplate")
+        scroll:SetPoint("TOPLEFT", self.Inset, "TOPLEFT", 22, -4)
+        scroll:SetPoint("BOTTOMRIGHT", self.Inset, "BOTTOMRIGHT", -22, 4)
+
+        local scrollChild = CreateFrame("Frame", "DoF_GMPanel_ScrollChild", scroll)
+        scrollChild:SetSize(1, 1)
+        scroll:SetScrollChild(scrollChild)
+
+        self.Scroll = scroll
+        self.ScrollChild = scrollChild
+    </OnLoad>
+    <OnDragStart>self:StartMoving()</OnDragStart>
+    <OnDragStop>self:StopMovingOrSizing()</OnDragStop>
+</Scripts>
+
+<Frames>
+    <!-- Вкладки внизу рамки (CharacterFrameTabButtonTemplate) -->
+    <Button name="$parent_Tab1" inherits="CharacterFrameTabButtonTemplate" id="1">
+        <Anchors><Anchor point="TOPLEFT" relativeTo="$parent" relativePoint="BOTTOMLEFT" x="11" y="2"/></Anchors>
+        <Scripts>
+            <OnLoad>self:SetText(DoF_L_TAB_NPC)</OnLoad>
+            <OnClick>DoF:SetGMPanelTab(1)</OnClick>
+        </Scripts>
+    </Button>
+    <Button name="$parent_Tab2" inherits="CharacterFrameTabButtonTemplate" id="2">
+        <Anchors><Anchor point="LEFT" relativeTo="$parent_Tab1" relativePoint="RIGHT" x="-16" y="0"/></Anchors>
+        <Scripts>
+            <OnLoad>self:SetText(DoF_L_TAB_PLAYER)</OnLoad>
+            <OnClick>DoF:SetGMPanelTab(2)</OnClick>
+        </Scripts>
+    </Button>
+    <Button name="$parent_Tab3" inherits="CharacterFrameTabButtonTemplate" id="3">
+        <Anchors><Anchor point="LEFT" relativeTo="$parent_Tab2" relativePoint="RIGHT" x="-16" y="0"/></Anchors>
+        <Scripts>
+            <OnLoad>self:SetText(DoF_L_TAB_COMBAT)</OnLoad>
+            <OnClick>DoF:SetGMPanelTab(3)</OnClick>
+        </Scripts>
+    </Button>
+    <Button name="$parent_Tab4" inherits="CharacterFrameTabButtonTemplate" id="4">
+        <Anchors><Anchor point="LEFT" relativeTo="$parent_Tab3" relativePoint="RIGHT" x="-16" y="0"/></Anchors>
+        <Scripts>
+            <OnLoad>self:SetText(DoF_L_TAB_EFFECTS)</OnLoad>
+            <OnClick>DoF:SetGMPanelTab(4)</OnClick>
+        </Scripts>
+    </Button>
+    
+    <!-- ═══════ TAB 1: НПС ═══════ -->
+    <Frame name="$parent_TabContent1">
+        <Size x="220" y="104"/>
+        <Anchors><Anchor point="TOPLEFT" x="10" y="-60"/></Anchors>
+        <Layers>
+            <Layer level="OVERLAY">
+                <Texture file="Interface\Common\UI-TooltipDivider-Transparent">
+                    <Size x="210" y="8"/>
+                    <Anchors><Anchor point="TOP" x="0" y="-62"/></Anchors>
+                </Texture>
+            </Layer>
+        </Layers>
+        <Frames>
+            <Button name="DoF_GMPanel_NPCLibraryBtn" inherits="DoF_GMButtonWideTemplate" parentKey="L_NPC_LIBRARY" text="DoF_L_NPC_LIBRARY"><Anchors><Anchor point="TOP" x="0" y="-8"/></Anchors><Scripts><OnClick>DoF:ToggleNPCLibrary()</OnClick></Scripts></Button>
+            <Button name="DoF_GMPanel_NPCSetupBtn" inherits="DoF_GMButtonWideTemplate" parentKey="L_NPC_SETUP" text="DoF_L_NPC_SETUP"><Anchors><Anchor point="TOP" x="0" y="-34"/></Anchors><Scripts><OnClick>DoF:ShowNPCSetupDialog()</OnClick></Scripts></Button>
+            <Button name="DoF_GMPanel_ModifyNPCBtn" inherits="DoF_GMButtonTemplate" text="HP ±"><Anchors><Anchor point="TOP" x="-46" y="-76"/></Anchors><Scripts><OnClick>DoF:ShowModifyNPCHPDialog()</OnClick></Scripts></Button>
+            <Button name="DoF_GMPanel_RemoveNPCBtn" inherits="DoF_GMButtonTemplate" parentKey="L_REMOVE" text="DoF_L_REMOVE"><Anchors><Anchor point="TOP" x="46" y="-76"/></Anchors><Scripts><OnClick>DoF:RemoveTargetHP()</OnClick></Scripts></Button>
+        </Frames>
+    </Frame>
+    
+    <!-- ═══════ TAB 2: ИГРОК ═══════ -->
+    <!--
+        Раскладка:
+            y=0     заголовок  "УПРАВЛЕНИЕ ИГРОКОМ"
+            y=-14   разделитель (подчёркивание заголовка)
+            y=-24   Атака NPC / HP ±       (2 колонки, 88x24)
+            y=-50   +Ранение / -Ранение
+            y=-76   Дать щит                (широкая, 180x24)
+            y=-114  заголовок  "РОЛЬ ИГРОКА"
+            y=-128  разделитель
+            y=-138  Задать роль / Уровень   (меню выбора ступени 1-20)
+            y=-164  Уровень − / Уровень +   (шаг на ±1)
+            y=-190  Сброс статов
+            y=-228  заголовок  "ЭНЕРГИЯ"
+            y=-242  разделитель
+            y=-252  +1 энергия
+            y=-278  -1 энергия
+            y=-304  Полная энергия
+
+        Высота фрейма (336) = последняя кнопка + её высота + нижний отступ.
+        UpdateGMPanelSize берёт её как есть: панель растёт под контент, а если
+        упирается в GM_PANEL_MAX_HEIGHT — включается скролл.
+    -->
+    <Frame name="$parent_TabContent2" hidden="true">
+        <Size x="220" y="336"/>
+        <Anchors><Anchor point="TOPLEFT" x="10" y="-60"/></Anchors>
+        <Layers>
+            <Layer level="ARTWORK">
+                <FontString inherits="GameFontNormalSmall" parentKey="L_PLAYER_CONTROL_CAPS" text="DoF_L_PLAYER_CONTROL_CAPS">
+                    <Anchors><Anchor point="TOP" x="0" y="0"/></Anchors>
+                </FontString>
+                <FontString inherits="GameFontNormalSmall" parentKey="L_PLAYER_ROLE_CAPS" text="DoF_L_PLAYER_ROLE_CAPS">
+                    <Anchors><Anchor point="TOP" x="0" y="-114"/></Anchors>
+                </FontString>
+                <FontString inherits="GameFontNormalSmall" parentKey="L_ENERGY_CAPS" text="DoF_L_ENERGY_CAPS">
+                    <Anchors><Anchor point="TOP" x="0" y="-228"/></Anchors>
+                </FontString>
+            </Layer>
+            <Layer level="OVERLAY">
+                <Texture file="Interface\Common\UI-TooltipDivider-Transparent">
+                    <Size x="210" y="8"/>
+                    <Anchors><Anchor point="TOP" x="0" y="-14"/></Anchors>
+                </Texture>
+                <Texture file="Interface\Common\UI-TooltipDivider-Transparent">
+                    <Size x="210" y="8"/>
+                    <Anchors><Anchor point="TOP" x="0" y="-128"/></Anchors>
+                </Texture>
+                <Texture file="Interface\Common\UI-TooltipDivider-Transparent">
+                    <Size x="210" y="8"/>
+                    <Anchors><Anchor point="TOP" x="0" y="-242"/></Anchors>
+                </Texture>
+            </Layer>
+        </Layers>
+        <Frames>
+            <!-- УПРАВЛЕНИЕ ИГРОКОМ -->
+            <Button name="DoF_GMPanel_NPCAttackBtn" inherits="DoF_GMButtonTemplate" parentKey="L_NPC_ATTACK" text="DoF_L_NPC_ATTACK"><Anchors><Anchor point="TOP" x="-46" y="-24"/></Anchors><Scripts><OnClick>DoF:ShowNPCAttackDialog()</OnClick></Scripts></Button>
+            <Button name="DoF_GMPanel_ModifyHPBtn" inherits="DoF_GMButtonTemplate" text="HP ±"><Anchors><Anchor point="TOP" x="46" y="-24"/></Anchors><Scripts><OnClick>DoF:ShowModifyPlayerHPDialog()</OnClick></Scripts></Button>
+            <Button name="DoF_GMPanel_AddWoundBtn" inherits="DoF_GMButtonTemplate" parentKey="L_WOUND_ADD" text="DoF_L_WOUND_ADD"><Anchors><Anchor point="TOP" x="-46" y="-50"/></Anchors><Scripts><OnClick>DoF:MasterAddWound()</OnClick></Scripts></Button>
+            <Button name="DoF_GMPanel_RemWoundBtn" inherits="DoF_GMButtonTemplate" parentKey="L_WOUND_REMOVE" text="DoF_L_WOUND_REMOVE"><Anchors><Anchor point="TOP" x="46" y="-50"/></Anchors><Scripts><OnClick>DoF:MasterRemoveWound()</OnClick></Scripts></Button>
+            <Button name="DoF_GMPanel_GiveShieldBtn" inherits="DoF_GMButtonWideTemplate" parentKey="L_GIVE_SHIELD" text="DoF_L_GIVE_SHIELD"><Anchors><Anchor point="TOP" x="0" y="-76"/></Anchors><Scripts><OnClick>DoF:MasterGiveShield()</OnClick></Scripts></Button>
+            <!-- РОЛЬ ИГРОКА -->
+            <Button name="DoF_GMPanel_SetSpecBtn" inherits="DoF_GMButtonTemplate" parentKey="L_SET_ROLE" text="DoF_L_SET_ROLE"><Anchors><Anchor point="TOP" x="-46" y="-138"/></Anchors><Scripts><OnClick>DoF:MasterSetSpec()</OnClick></Scripts></Button>
+            <Button name="DoF_GMPanel_SetLevelBtn" inherits="DoF_GMButtonTemplate" parentKey="L_SET_LEVEL" text="DoF_L_SET_LEVEL"><Anchors><Anchor point="TOP" x="46" y="-138"/></Anchors><Scripts><OnClick>DoF:MasterSetLevel()</OnClick></Scripts></Button>
+            <Button name="DoF_GMPanel_LevelDownBtn" inherits="DoF_GMButtonTemplate" parentKey="L_LEVEL_MINUS_1" text="DoF_L_LEVEL_MINUS_1"><Anchors><Anchor point="TOP" x="-46" y="-164"/></Anchors><Scripts><OnClick>DoF:MasterLevelDown()</OnClick></Scripts></Button>
+            <Button name="DoF_GMPanel_LevelUpBtn" inherits="DoF_GMButtonTemplate" parentKey="L_LEVEL_PLUS_1" text="DoF_L_LEVEL_PLUS_1"><Anchors><Anchor point="TOP" x="46" y="-164"/></Anchors><Scripts><OnClick>DoF:MasterLevelUp()</OnClick></Scripts></Button>
+            <Button name="DoF_GMPanel_ResetBtn" inherits="DoF_GMButtonWideTemplate" parentKey="L_RESET_STATS" text="DoF_L_RESET_STATS"><Anchors><Anchor point="TOP" x="0" y="-190"/></Anchors><Scripts><OnClick>DoF:MasterResetStats()</OnClick></Scripts></Button>
+            <!-- ЭНЕРГИЯ -->
+            <Button name="DoF_GMPanel_GiveEnergyBtn" inherits="DoF_GMButtonWideTemplate" parentKey="L_ENERGY_PLUS_1" text="DoF_L_ENERGY_PLUS_1"><Anchors><Anchor point="TOP" x="0" y="-252"/></Anchors><Scripts><OnClick>DoF:MasterGiveEnergy()</OnClick></Scripts></Button>
+            <Button name="DoF_GMPanel_TakeEnergyBtn" inherits="DoF_GMButtonWideTemplate" parentKey="L_ENERGY_MINUS_1" text="DoF_L_ENERGY_MINUS_1"><Anchors><Anchor point="TOP" x="0" y="-278"/></Anchors><Scripts><OnClick>DoF:MasterTakeEnergy()</OnClick></Scripts></Button>
+            <Button name="DoF_GMPanel_RestoreEnergyBtn" inherits="DoF_GMButtonWideTemplate" parentKey="L_FULL_ENERGY" text="DoF_L_FULL_ENERGY"><Anchors><Anchor point="TOP" x="0" y="-304"/></Anchors><Scripts><OnClick>DoF:MasterRestoreEnergy()</OnClick></Scripts></Button>
+        </Frames>
+    </Frame>
+
+    <!-- ═══════ TAB 3: БОЙ ═══════ -->
+    <!--
+        Раскладка:
+            y=0     заголовок  "НАСТРОЙКИ БОЯ"
+            y=-14   разделитель
+            y=-24   ExcludeMaster checkbox (180x20)
+            y=-52   Свободная очередь     (checkbox + label)
+            y=-74     По порядку инициативы
+            y=-98     Использовать таймер
+            y=-118    Мгновенная защита
+            y=-144  заголовок  "УПРАВЛЕНИЕ БОЕМ"
+            y=-158  разделитель
+            y=-168  TimerFrame + Начать бой
+            y=-196  Пропустить / Ход противника
+            y=-222  Внеочередной ход
+            y=-254  заголовок  "УТИЛИТЫ"
+            y=-268  разделитель
+            y=-278  Очистить всех NPC
+            y=-304  Синхронизация
+            y=-330  Проверить версии
+    -->
+    <Frame name="$parent_TabContent3" hidden="true">
+        <Size x="220" y="362"/>
+        <Anchors><Anchor point="TOPLEFT" x="10" y="-60"/></Anchors>
+        <Layers>
+            <Layer level="ARTWORK">
+                <FontString inherits="GameFontNormalSmall" parentKey="L_COMBAT_SETTINGS_CAPS" text="DoF_L_COMBAT_SETTINGS_CAPS">
+                    <Anchors><Anchor point="TOP" x="0" y="0"/></Anchors>
+                </FontString>
+                <FontString parentKey="modeFreeLabel" inherits="GameFontNormalSmall" text="DoF_L_FREE_QUEUE">
+                    <Anchors><Anchor point="TOP" x="20" y="-52"/></Anchors>
+                </FontString>
+                <FontString parentKey="modeQueueLabel" inherits="GameFontNormalSmall" text="DoF_L_BY_INITIATIVE">
+                    <Anchors><Anchor point="TOP" x="30" y="-74"/></Anchors>
+                </FontString>
+                <FontString parentKey="useTimerLabel" inherits="GameFontNormalSmall" text="DoF_L_USE_TIMER">
+                    <Anchors><Anchor point="TOP" x="30" y="-98"/></Anchors>
+                </FontString>
+                <FontString parentKey="instantDefenseLabel" inherits="GameFontNormalSmall" text="DoF_L_INSTANT_DEFENSE">
+                    <Anchors><Anchor point="TOP" x="30" y="-118"/></Anchors>
+                </FontString>
+                <FontString inherits="GameFontNormalSmall" parentKey="L_COMBAT_CONTROL_CAPS" text="DoF_L_COMBAT_CONTROL_CAPS">
+                    <Anchors><Anchor point="TOP" x="0" y="-144"/></Anchors>
+                </FontString>
+                <FontString parentKey="utilitiesLabel" inherits="GameFontNormalSmall" text="DoF_L_UTILITIES_CAPS">
+                    <Anchors><Anchor point="TOP" x="0" y="-254"/></Anchors>
+                </FontString>
+            </Layer>
+            <Layer level="OVERLAY">
+                <Texture file="Interface\Common\UI-TooltipDivider-Transparent">
+                    <Size x="210" y="8"/>
+                    <Anchors><Anchor point="TOP" x="0" y="-14"/></Anchors>
+                </Texture>
+                <Texture file="Interface\Common\UI-TooltipDivider-Transparent">
+                    <Size x="210" y="8"/>
+                    <Anchors><Anchor point="TOP" x="0" y="-158"/></Anchors>
+                </Texture>
+                <Texture file="Interface\Common\UI-TooltipDivider-Transparent">
+                    <Size x="210" y="8"/>
+                    <Anchors><Anchor point="TOP" x="0" y="-268"/></Anchors>
+                </Texture>
+            </Layer>
+        </Layers>
+        <Frames>
+            <!-- Переключатель: с/без ведущего в очереди (обычная кнопка-toggle) -->
+            <Button name="DoF_GMPanel_ExcludeMasterBtn" inherits="DoF_GMButtonWideTemplate" parentKey="L_QUEUE_NO_LEADER" text="DoF_L_QUEUE_NO_LEADER">
+                <Anchors><Anchor point="TOP" x="0" y="-22"/></Anchors>
+                <Scripts>
+                    <OnLoad>self.excludeMaster = true</OnLoad>
+                    <OnShow>DoF:UpdateExcludeMasterButton()</OnShow>
+                    <OnClick>
+                        self.excludeMaster = not self.excludeMaster
+                        DoF:UpdateExcludeMasterButton()
+                    </OnClick>
+                </Scripts>
+            </Button>
+
+            <!-- Mode selector (радиокнопки) -->
+            <CheckButton name="DoF_GMPanel_ModeFreeCheckBtn" checked="true">
+                <Size x="16" y="16"/>
+                <Anchors><Anchor point="TOP" x="-50" y="-52"/></Anchors>
+                <NormalTexture file="Interface\Buttons\UI-CheckBox-Up"/>
+                <PushedTexture file="Interface\Buttons\UI-CheckBox-Down"/>
+                <HighlightTexture file="Interface\Buttons\UI-CheckBox-Highlight" alphaMode="ADD"/>
+                <CheckedTexture file="Interface\Buttons\UI-CheckBox-Check"/>
+                <Scripts>
+                    <OnClick>DoF:GMToggleModeCheckbox(self, "free")</OnClick>
+                </Scripts>
+            </CheckButton>
+            <CheckButton name="DoF_GMPanel_ModeQueueCheckBtn">
+                <Size x="16" y="16"/>
+                <Anchors><Anchor point="TOP" x="-50" y="-74"/></Anchors>
+                <NormalTexture file="Interface\Buttons\UI-CheckBox-Up"/>
+                <PushedTexture file="Interface\Buttons\UI-CheckBox-Down"/>
+                <HighlightTexture file="Interface\Buttons\UI-CheckBox-Highlight" alphaMode="ADD"/>
+                <CheckedTexture file="Interface\Buttons\UI-CheckBox-Check"/>
+                <Scripts>
+                    <OnClick>DoF:GMToggleModeCheckbox(self, "queue")</OnClick>
+                </Scripts>
+            </CheckButton>
+
+            <!-- Timer checkbox -->
+            <CheckButton name="DoF_GMPanel_UseTimerCheckBtn">
+                <Size x="16" y="16"/>
+                <Anchors><Anchor point="TOP" x="-50" y="-98"/></Anchors>
+                <NormalTexture file="Interface\Buttons\UI-CheckBox-Up"/>
+                <PushedTexture file="Interface\Buttons\UI-CheckBox-Down"/>
+                <HighlightTexture file="Interface\Buttons\UI-CheckBox-Highlight" alphaMode="ADD"/>
+                <CheckedTexture file="Interface\Buttons\UI-CheckBox-Check"/>
+                <Scripts>
+                    <OnClick>DoF:GMToggleTimerCheckbox()</OnClick>
+                </Scripts>
+            </CheckButton>
+
+            <!-- Instant Defense checkbox -->
+            <CheckButton name="DoF_GMPanel_InstantDefenseCheckBtn">
+                <Size x="16" y="16"/>
+                <Anchors><Anchor point="TOP" x="-50" y="-118"/></Anchors>
+                <NormalTexture file="Interface\Buttons\UI-CheckBox-Up"/>
+                <PushedTexture file="Interface\Buttons\UI-CheckBox-Down"/>
+                <HighlightTexture file="Interface\Buttons\UI-CheckBox-Highlight" alphaMode="ADD"/>
+                <CheckedTexture file="Interface\Buttons\UI-CheckBox-Check"/>
+                <Scripts>
+                    <OnClick>DoF:GMToggleInstantDefense()</OnClick>
+                </Scripts>
+            </CheckButton>
+
+            <!-- Timer + Start (центрировано) -->
+            <Frame name="DoF_GMPanel_TimerFrame">
+                <Size x="70" y="24"/>
+                <Anchors><Anchor point="TOP" x="-60" y="-168"/></Anchors>
+                <Frames>
+                    <EditBox name="$parent_Input" inherits="InputBoxTemplate" autoFocus="false" numeric="true">
+                        <Size x="40" y="20"/>
+                        <Anchors><Anchor point="LEFT" x="6" y="0"/></Anchors>
+                        <Scripts><OnLoad>self:SetText("60")</OnLoad></Scripts>
+                    </EditBox>
+                </Frames>
+                <Layers><Layer level="OVERLAY">
+                    <FontString inherits="GameFontNormalSmall" parentKey="L_SECONDS_SHORT" text="DoF_L_SECONDS_SHORT">
+                        <Anchors><Anchor point="RIGHT" x="-2" y="0"/></Anchors>
+                    </FontString>
+                </Layer></Layers>
+            </Frame>
+            <Button name="DoF_GMPanel_StartCombatBtn" inherits="DoF_GMButtonTemplate" parentKey="L_START_COMBAT" text="DoF_L_START_COMBAT">
+                <Size x="108" y="24"/>
+                <Anchors><Anchor point="TOP" x="34" y="-168"/></Anchors>
+                <Scripts><OnClick>DoF:GMStartCombat()</OnClick></Scripts>
+            </Button>
+            <Button name="DoF_GMPanel_SkipTurnBtn" inherits="DoF_GMButtonTemplate" parentKey="L_SKIP" text="DoF_L_SKIP">
+                <Anchors><Anchor point="TOP" x="-46" y="-196"/></Anchors>
+                <Scripts><OnClick>DoF:GMSkipTurn()</OnClick></Scripts>
+            </Button>
+            <Button name="DoF_GMPanel_NPCTurnBtn" inherits="DoF_GMButtonTemplate" parentKey="L_ENEMY_TURN" text="DoF_L_ENEMY_TURN">
+                <Anchors><Anchor point="TOP" x="46" y="-196"/></Anchors>
+                <Scripts><OnClick>DoF:GMToggleNPCTurn()</OnClick></Scripts>
+            </Button>
+            <Button name="DoF_GMPanel_FreeActionBtn" inherits="DoF_GMButtonWideTemplate" parentKey="L_EXTRA_TURN" text="DoF_L_EXTRA_TURN">
+                <Anchors><Anchor point="TOP" x="0" y="-222"/></Anchors>
+                <Scripts><OnClick>DoF:GMFreeAction()</OnClick></Scripts>
+            </Button>
+            <Button name="DoF_GMPanel_ClearAllBtn" inherits="DoF_GMButtonWideTemplate" parentKey="L_CLEAR_ALL_NPCS" text="DoF_L_CLEAR_ALL_NPCS">
+                <Anchors><Anchor point="TOP" x="0" y="-278"/></Anchors>
+                <Scripts><OnClick>DoF:ClearAllNPCConfirm()</OnClick></Scripts>
+            </Button>
+            <Button name="DoF_GMPanel_SyncBtn" inherits="DoF_GMButtonWideTemplate" parentKey="L_SYNC" text="DoF_L_SYNC">
+                <Anchors><Anchor point="TOP" x="0" y="-304"/></Anchors>
+                <Scripts><OnClick>DoF:MasterSync()</OnClick></Scripts>
+            </Button>
+            <Button name="DoF_GMPanel_VersionCheckBtn" inherits="DoF_GMButtonWideTemplate" parentKey="L_CHECK_VERSIONS" text="DoF_L_CHECK_VERSIONS">
+                <Anchors><Anchor point="TOP" x="0" y="-330"/></Anchors>
+                <Scripts><OnClick>DoF:MasterCheckVersions()</OnClick></Scripts>
+            </Button>
+        </Frames>
+    </Frame>
+
+    <!-- ═══════ TAB 4: ЭФФЕКТЫ (контент генерируется в Lua) ═══════ -->
+    <Frame name="$parent_TabContent4" hidden="true">
+        <Size x="220" y="276"/>
+        <Anchors><Anchor point="TOPLEFT" x="10" y="-60"/></Anchors>
+    </Frame>
+</Frames>
+</Frame>
+
+<!-- ═══════════════════════════════════════════════════════════════════════════
+     DIALOGS
+     ═══════════════════════════════════════════════════════════════════════════ -->
+
+<!-- NPC Setup (HP + Defense combined) -->
+<Frame name="DoF_NPCSetupDialog" parent="UIParent" inherits="DoF_DialogTemplate" hidden="true">
+<Size x="220" y="210"/><Anchors><Anchor point="CENTER"/></Anchors>
+<Scripts><OnShow>self.Header:Setup(DoF_L_NPC_SETUP)</OnShow></Scripts>
+<Layers><Layer level="ARTWORK">
+    <FontString name="$parent_TargetName" inherits="GameFontNormalSmall" text=""><Anchors><Anchor point="TOP" y="-40"/></Anchors><Color r="0.7" g="0.7" b="0.7"/></FontString>
+    <FontString inherits="GameFontNormalSmall" text="HP"><Anchors><Anchor point="TOPLEFT" x="25" y="-65"/></Anchors></FontString>
+    <FontString inherits="GameFontNormalSmall" parentKey="L_FORTITUDE_CAPS" text="DoF_L_FORTITUDE_CAPS"><Anchors><Anchor point="TOPLEFT" x="25" y="-87"/></Anchors></FontString>
+    <FontString inherits="GameFontNormalSmall" parentKey="L_REFLEX_CAPS" text="DoF_L_REFLEX_CAPS"><Anchors><Anchor point="TOPLEFT" x="25" y="-109"/></Anchors></FontString>
+    <FontString inherits="GameFontNormalSmall" parentKey="L_WILL_CAPS" text="DoF_L_WILL_CAPS"><Anchors><Anchor point="TOPLEFT" x="25" y="-131"/></Anchors></FontString>
+</Layer></Layers>
+<Frames>
+    <EditBox name="$parent_HPInput" inherits="InputBoxTemplate" autoFocus="false" numeric="true"><Size x="50" y="20"/><Anchors><Anchor point="TOPLEFT" x="80" y="-62"/></Anchors><Scripts><OnEnterPressed>DoF:ApplyNPCSetup()</OnEnterPressed><OnEscapePressed>self:GetParent():Hide()</OnEscapePressed></Scripts></EditBox>
+    <EditBox name="$parent_FortInput" inherits="InputBoxTemplate" autoFocus="false" numeric="true"><Size x="40" y="20"/><Anchors><Anchor point="TOPLEFT" x="80" y="-84"/></Anchors></EditBox>
+    <EditBox name="$parent_ReflexInput" inherits="InputBoxTemplate" autoFocus="false" numeric="true"><Size x="40" y="20"/><Anchors><Anchor point="TOPLEFT" x="80" y="-106"/></Anchors></EditBox>
+    <EditBox name="$parent_WillInput" inherits="InputBoxTemplate" autoFocus="false" numeric="true"><Size x="40" y="20"/><Anchors><Anchor point="TOPLEFT" x="80" y="-128"/></Anchors></EditBox>
+    <Button name="$parent_OKButton" inherits="DoF_GMButtonTemplate" text="OK"><Size x="70" y="24"/><Anchors><Anchor point="BOTTOM" x="0" y="15"/></Anchors><Scripts><OnClick>DoF:ApplyNPCSetup()</OnClick></Scripts></Button>
+</Frames>
+</Frame>
+
+<!-- Modify NPC HP -->
+<Frame name="DoF_ModifyNPCHPDialog" parent="UIParent" inherits="DoF_DialogTemplate" hidden="true">
+<Size x="200" y="140"/><Anchors><Anchor point="CENTER"/></Anchors>
+<Scripts><OnShow>self.Header:Setup("HP NPC")</OnShow></Scripts>
+<Layers><Layer level="ARTWORK">
+    <FontString name="$parent_TargetName" inherits="GameFontNormalSmall" text=""><Anchors><Anchor point="TOP" y="-40"/></Anchors><Color r="0.7" g="0.7" b="0.7"/></FontString>
+</Layer></Layers>
+<Frames>
+    <EditBox name="$parent_Input" inherits="InputBoxTemplate" autoFocus="false" numeric="true"><Size x="60" y="20"/><Anchors><Anchor point="TOP" y="-62"/></Anchors></EditBox>
+    <Button name="$parent_SubtractButton" inherits="DoF_GMButtonTemplate" text="-"><Size x="50" y="24"/><Anchors><Anchor point="BOTTOMLEFT" x="20" y="15"/></Anchors><Scripts><OnClick>DoF:ApplyModifyNPCHP(-1)</OnClick></Scripts></Button>
+    <Button name="$parent_AddButton" inherits="DoF_GMButtonTemplate" text="+"><Size x="50" y="24"/><Anchors><Anchor point="BOTTOMRIGHT" x="-20" y="15"/></Anchors><Scripts><OnClick>DoF:ApplyModifyNPCHP(1)</OnClick></Scripts></Button>
+</Frames>
+</Frame>
+
+<!-- NPC Attack -->
+<Frame name="DoF_NPCAttackDialog" parent="UIParent" inherits="DoF_DialogTemplate" hidden="true">
+<Size x="240" y="270"/><Anchors><Anchor point="CENTER"/></Anchors>
+<Scripts><OnShow>self.Header:Setup(DoF_L_NPC_ATTACK)</OnShow></Scripts>
+<Layers><Layer level="ARTWORK">
+    <FontString name="$parent_TargetName" inherits="GameFontNormalSmall" text=""><Anchors><Anchor point="TOP" y="-40"/></Anchors><Color r="0.7" g="0.7" b="0.7"/></FontString>
+    <FontString inherits="GameFontNormalSmall" parentKey="L_NAME" text="DoF_L_NAME"><Anchors><Anchor point="TOPLEFT" x="25" y="-65"/></Anchors></FontString>
+    <FontString inherits="GameFontNormalSmall" parentKey="L_DAMAGE" text="DoF_L_DAMAGE"><Anchors><Anchor point="TOPLEFT" x="25" y="-87"/></Anchors></FontString>
+    <FontString name="$parent_DamageSep" inherits="GameFontNormalSmall" text="-"><Anchors><Anchor point="TOPLEFT" x="108" y="-87"/></Anchors></FontString>
+    <FontString inherits="GameFontNormalSmall" parentKey="L_THRESHOLD" text="DoF_L_THRESHOLD"><Anchors><Anchor point="TOPLEFT" x="25" y="-109"/></Anchors></FontString>
+    <FontString inherits="GameFontNormalSmall" parentKey="L_DEFENSE_SHORT" text="DoF_L_DEFENSE_SHORT"><Anchors><Anchor point="TOPLEFT" x="25" y="-133"/></Anchors></FontString>
+    <FontString inherits="GameFontNormalSmall" parentKey="L_DEBUFF" text="DoF_L_DEBUFF"><Anchors><Anchor point="TOPLEFT" x="25" y="-159"/></Anchors></FontString>
+    <FontString name="$parent_DebuffValueLabel" inherits="GameFontNormalSmall" parentKey="L_VALUE_SHORT" text="DoF_L_VALUE_SHORT"><Anchors><Anchor point="TOPLEFT" x="25" y="-185"/></Anchors></FontString>
+    <FontString name="$parent_DebuffDurationLabel" inherits="GameFontNormalSmall" parentKey="L_ROUND_SHORT" text="DoF_L_ROUND_SHORT"><Anchors><Anchor point="TOPLEFT" x="120" y="-185"/></Anchors></FontString>
+</Layer></Layers>
+<Frames>
+    <EditBox name="$parent_NPCNameInput" inherits="InputBoxTemplate" autoFocus="false"><Size x="130" y="20"/><Anchors><Anchor point="TOPLEFT" x="75" y="-62"/></Anchors></EditBox>
+    <EditBox name="$parent_DamageMinInput" inherits="InputBoxTemplate" autoFocus="false" numeric="true"><Size x="35" y="20"/><Anchors><Anchor point="TOPLEFT" x="75" y="-84"/></Anchors></EditBox>
+    <EditBox name="$parent_DamageMaxInput" inherits="InputBoxTemplate" autoFocus="false" numeric="true"><Size x="35" y="20"/><Anchors><Anchor point="TOPLEFT" x="125" y="-84"/></Anchors></EditBox>
+    <EditBox name="$parent_ThresholdInput" inherits="InputBoxTemplate" autoFocus="false" numeric="true"><Size x="40" y="20"/><Anchors><Anchor point="TOPLEFT" x="75" y="-106"/></Anchors></EditBox>
+    <Button name="$parent_DefenseDropdown" inherits="DoF_GMButtonTemplate" parentKey="L_FORTITUDE_SHORT" text="DoF_L_FORTITUDE_SHORT"><Size x="70" y="22"/><Anchors><Anchor point="TOPLEFT" x="75" y="-133"/></Anchors><Scripts><OnClick>DoF:ShowNPCAttackDefenseMenu(self)</OnClick></Scripts></Button>
+    <Button name="$parent_DebuffDropdown" inherits="DoF_GMButtonTemplate" parentKey="L_NO" text="DoF_L_NO"><Size x="100" y="22"/><Anchors><Anchor point="TOPLEFT" x="75" y="-159"/></Anchors><Scripts><OnClick>DoF:ShowNPCAttackDebuffMenu(self)</OnClick></Scripts></Button>
+    <EditBox name="$parent_DebuffValueInput" inherits="InputBoxTemplate" autoFocus="false" numeric="true"><Size x="35" y="20"/><Anchors><Anchor point="TOPLEFT" x="75" y="-182"/></Anchors></EditBox>
+    <EditBox name="$parent_DebuffDurationInput" inherits="InputBoxTemplate" autoFocus="false" numeric="true"><Size x="35" y="20"/><Anchors><Anchor point="TOPLEFT" x="170" y="-182"/></Anchors></EditBox>
+    <Button name="$parent_OKButton" inherits="DoF_GMButtonTemplate" parentKey="L_ATTACK" text="DoF_L_ATTACK"><Size x="75" y="24"/><Anchors><Anchor point="BOTTOM" x="0" y="15"/></Anchors><Scripts><OnClick>DoF:ApplyNPCAttack()</OnClick></Scripts></Button>
+</Frames>
+</Frame>
+
+<!-- Modify Player HP -->
+<Frame name="DoF_ModifyPlayerHPDialog" parent="UIParent" inherits="DoF_DialogTemplate" hidden="true">
+<Size x="200" y="140"/><Anchors><Anchor point="CENTER"/></Anchors>
+<Scripts><OnShow>self.Header:Setup(DoF_L_PLAYER_HP_TITLE)</OnShow></Scripts>
+<Layers><Layer level="ARTWORK">
+    <FontString name="$parent_TargetName" inherits="GameFontNormalSmall" text=""><Anchors><Anchor point="TOP" y="-40"/></Anchors><Color r="0.7" g="0.7" b="0.7"/></FontString>
+</Layer></Layers>
+<Frames>
+    <EditBox name="$parent_Input" inherits="InputBoxTemplate" autoFocus="false" numeric="true"><Size x="60" y="20"/><Anchors><Anchor point="TOP" y="-62"/></Anchors></EditBox>
+    <Button name="$parent_SubtractButton" inherits="DoF_GMButtonTemplate" text="-"><Size x="50" y="24"/><Anchors><Anchor point="BOTTOMLEFT" x="20" y="15"/></Anchors><Scripts><OnClick>DoF:ApplyModifyPlayerHP(-1)</OnClick></Scripts></Button>
+    <Button name="$parent_AddButton" inherits="DoF_GMButtonTemplate" text="+"><Size x="50" y="24"/><Anchors><Anchor point="BOTTOMRIGHT" x="-20" y="15"/></Anchors><Scripts><OnClick>DoF:ApplyModifyPlayerHP(1)</OnClick></Scripts></Button>
+</Frames>
+</Frame>
+
+
+</Ui>

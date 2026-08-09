@@ -1,0 +1,79 @@
+UI\Settings.lua	Настройки аддона боевой системы	ui.opt.desc
+UI\Settings.lua	|cFFFFD700Журнал боя|r	ui.opt.log_header
+UI\Settings.lua	Включить журнал боя	ui.opt.log_enable
+UI\Settings.lua	Когда включено: все сообщения боя отображаются в журнале.\nКогда выключено: сообщения боя отображаются в чате, журнал недоступен.	ui.opt.log_tooltip
+UI\Settings.lua	Включено: все логи боя отображаются в окне журнала (ничего в чат).\nВыключено: журнал недоступен, все логи идут только в чат.	ui.opt.log_desc
+UI\Settings.lua	Журнал боя включен	ui.opt.log_on
+UI\Settings.lua	Журнал боя выключен, сообщения будут в чате	ui.opt.log_off
+UI\Settings.lua	|cFFFFD700Масштаб окна|r	ui.opt.scale_header
+UI\Settings.lua	Масштаб интерфейса	ui.opt.scale_slider
+UI\Settings.lua	Изменяет размер главного окна ABS. Требуется перезагрузка UI для полного применения.	ui.opt.scale_desc
+UI\Settings.lua	|cFFFFD700Компактные фреймы|r	ui.opt.frames_header
+UI\Settings.lua	Показывать фрейм игрока	ui.opt.player_frame
+UI\Settings.lua	Отображать компактный фрейм с HP, энергией и эффектами игрока.	ui.opt.player_frame_tooltip
+UI\Settings.lua	Показывать фрейм цели (NPC)	ui.opt.target_frame
+UI\Settings.lua	Отображать компактный фрейм с HP и защитой выбранного NPC.	ui.opt.target_frame_tooltip
+UI\Settings.lua	Заблокировать перемещение	ui.opt.lock_frames
+UI\Settings.lua	Запретить перемещение фреймов мышью.	ui.opt.lock_frames_tooltip
+UI\Settings.lua	Масштаб фреймов	ui.opt.frames_scale
+UI\Settings.lua	Сбросить позиции	ui.opt.reset_positions
+UI\Settings.lua	Позиции фреймов сброшены	ui.opt.positions_reset
+UI\Settings.lua	|cFFFFD700Панель действий|r	ui.opt.actionbar_header
+UI\Settings.lua	Показывать панель действий	ui.opt.actionbar_show
+UI\Settings.lua	Отображать плавающую панель с кнопками действий (атака, лечение и т.д.)	ui.opt.actionbar_tooltip
+UI\Settings.lua	Сбросить настройки	ui.opt.reset_settings
+UI\Settings.lua	Сбросить все настройки ABS к значениям по умолчанию?	ui.opt.reset_confirm
+UI\Settings.lua	Да	ui.common.yes
+UI\Settings.lua	Нет	ui.common.no
+UI\Settings.lua	Настройки сброшены к значениям по умолчанию	ui.opt.settings_reset
+UI\UnitFrames.lua	|cFF888888Нет данных|r	ui.uf.no_data
+UI\UnitFrames.lua	Стойкость	stats.fortitude.label
+UI\UnitFrames.lua	Сноровка	stats.reflex.label
+UI\UnitFrames.lua	Воля	stats.will.label
+UI\UnitFrames.lua	Сто:	ui.uf.fort_short
+UI\UnitFrames.lua	Сно:	ui.uf.reflex_short
+UI\UnitFrames.lua	Вол:	ui.uf.will_short
+UI\UnitFrames.lua	Защита от физических атак (Сила)	ui.uf.fort_desc
+UI\UnitFrames.lua	Защита от точных атак (Ловкость)	ui.uf.reflex_desc
+UI\UnitFrames.lua	Защита от магических атак (Интеллект)	ui.uf.will_desc
+UI\UnitFrames.lua	Критическое ранение	ui.uf.critical_wound
+UI\UnitFrames.lua	Ранение	ui.uf.wound
+UI\UnitFrames.lua	Без сознания. Все действия заблокированы. Ходы пропускаются автоматически. Судьбу решает мастер.	ui.uf.critical_wound_desc_full
+UI\UnitFrames.lua	Без сознания. Все действия заблокированы. Судьбу решает мастер.	ui.uf.critical_wound_desc_short
+UI\UnitFrames.lua	Штраф ко всем характеристикам	ui.uf.wound_penalty_generic
+UI\UnitFrames.lua	КРИТИЧЕСКОЕ РАНЕНИЕ (без сознания)	ui.uf.critical_wound_line
+UI\UnitFrames.lua	Данные загружаются...	ui.uf.loading
+UI\UnitFrames.lua	Эффект	ui.uf.effect
+UI\UnitFrames.lua	Дебафф	ui.common.debuff
+UI\UnitFrames.lua	Лечит	ui.effect.heals
+UI\UnitFrames.lua	Урон	ui.common.damage
+UI\MainFrame_GM.lua	Выберите цель!	errors.select_target
+UI\MainFrame_GM.lua	Выберите NPC!	errors.select_npc
+UI\MainFrame_GM.lua	У NPC не установлен HP!	errors.npc_hp_not_set
+UI\MainFrame_GM.lua	Полная синхронизация выполнена	ui.gm.full_sync_done
+UI\MainFrame_GM.lua	Оглушение	effects.stun.name
+UI\MainFrame_GM.lua	Ослабление...	ui.gm.weakness_dialog
+UI\MainFrame_GM.lua	Уязвимость...	ui.gm.vulnerability_dialog
+UI\MainFrame_GM.lua	Усиление...	ui.gm.buff_dialog
+UI\MainFrame_GM.lua	ЭФФЕКТЫ	ui.gm.cat_effects
+UI\MainFrame_GM.lua	ПАССИВКИ NPC	ui.gm.cat_passives
+UI\MainFrame_GM.lua	УТИЛИТЫ	ui.gm.cat_utils
+UI\MainFrame_GM.lua	Пурж (снять бафф)	ui.gm.util_purge
+UI\MainFrame_GM.lua	Диспел (снять дебафф)	ui.gm.util_dispel
+UI\MainFrame_GM.lua	Снять ВСЕ эффекты	ui.gm.util_clear_all
+UI\MainFrame_GM.lua	Начать бой	ui.gm.start_combat
+UI\MainFrame_GM.lua	Окончить бой	ui.gm.end_combat
+UI\MainFrame_GM.lua	Ход игроков	ui.queue.phase_players
+UI\MainFrame_GM.lua	Ход противника	ui.queue.phase_enemy
+UI\Dialogs_Wound.lua	Критическое ранение	ui.wound.master_title
+UI\Dialogs_Wound.lua	Дать бросок	ui.wound.give_roll
+UI\Dialogs_Wound.lua	Оставить с ранением	ui.wound.leave_wounded
+UI\Dialogs_Wound.lua	Бросок на выживание	ui.wound.setup_title
+UI\Dialogs_Wound.lua	Характеристика:	ui.combat.stat_label
+UI\Dialogs_Wound.lua	Порог (DC):	ui.wound.dc_label
+UI\Dialogs_Wound.lua	При успехе игрок выживает, но остаётся в критическом состоянии. При провале персонаж погибает.	ui.wound.hint
+UI\Dialogs_Wound.lua	Отправить бросок	ui.wound.send_roll
+UI\Dialogs_Wound.lua	Отмена	ui.common.cancel
+UI\Dialogs_Wound.lua	Выберите характеристику!	errors.select_stat
+UI\Dialogs_Wound.lua	Успех — вы выживаете, но остаётесь в критическом состоянии.\nПровал — ваш персонаж погибает.	ui.wound.player_hint
+UI\Dialogs_Wound.lua	Бросить кубик	ui.wound.roll_btn

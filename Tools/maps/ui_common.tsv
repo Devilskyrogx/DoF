@@ -1,0 +1,25 @@
+UI\ActionBar.lua	Бафф	ui.common.buff
+UI\Dialogs.lua	Бафф	ui.common.buff
+UI\Effects.lua	Бафф	ui.common.buff
+UI\TurnQueue_Panels.lua	Бафф	ui.common.buff
+UI\UnitFrames.lua	Бафф	ui.common.buff
+UI\ActionBar.lua	Исцеление	ui.common.healing
+UI\CharacterSidebar.lua	Исцеление	ui.common.healing
+UI\Dialogs.lua	Исцеление	ui.common.healing
+UI\Dialogs_Effects.lua	Исцеление	ui.common.healing
+UI\Dialogs.lua	Периодический урон	ui.common.dot
+UI\Effects.lua	Периодический урон	ui.common.dot
+UI\MainFrame_GM.lua	Периодический урон	ui.common.dot
+UI\UnitFrames.lua	Периодический урон	ui.common.dot
+UI\ActionBar.lua	Пропуск	ui.common.skip
+UI\TurnQueue.lua	Пропуск	ui.common.skip
+UI\Dialogs.lua	Цель мертва	ui.common.target_dead
+UI\Nameplates.lua	Цель мертва	ui.common.target_dead
+UI\ActionBar.lua	Щит	ui.common.shield
+UI\CharacterSidebar.lua	Щит	ui.common.shield
+UI\Dialogs.lua	Щит	ui.common.shield
+UI\UnitFrames.lua	Щит	ui.common.shield
+UI\Dialogs_NPC.lua	Выберите игрока!	errors.select_player
+UI\MainFrame_GM.lua	Выберите игрока!	errors.select_player
+UI\TurnQueue.lua	Выберите игрока!	errors.select_player
+UI\MinimapButton.lua	Журнал боя	ui.combatlog.title_battle

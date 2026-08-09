@@ -1,0 +1,35 @@
+UI\TurnQueue_Panels.lua	|cFFFFD700Ход игроков!|r	ui.panel.players_turn
+UI\TurnQueue_Panels.lua	|cFF00FF00ВАШ ХОД!|r\n|cFFAAAAAA(выполните действие или пропустите ход)|r	ui.panel.your_turn
+UI\TurnQueue_Panels.lua	|cFFFF3333Ход противника!|r	ui.panel.enemy_turn_alert
+UI\TurnQueue_Panels.lua	|cFFFFFFFFБОЙ ОКОНЧЕН|r	ui.panel.combat_over
+UI\TurnQueue_Panels.lua	|cFFFFD700ВНЕОЧЕРЕДНОЙ ХОД|r	ui.panel.extra_turn_title
+UI\TurnQueue_Panels.lua	|cFFAAAAAA(выполните действие)|r	ui.panel.extra_turn_sub
+UI\TurnQueue_Panels.lua	|cFFFF0000КРИТИЧЕСКОЕ РАНЕНИЕ!|r	ui.panel.critical_wound_title
+UI\TurnQueue_Panels.lua	AoE АТАКА	ui.panel.aoe_attack_title
+UI\TurnQueue_Panels.lua	AoE ИСЦЕЛЕНИЕ	ui.panel.aoe_heal_title
+UI\TurnQueue_Panels.lua	AoE ЩИТ	ui.panel.aoe_shield_title
+UI\TurnQueue_Panels.lua	КОНТРАТАКА	ui.panel.counterattack_title
+UI\TurnQueue_Panels.lua	+2 HP СОЮЗНИКУ	ui.panel.tank_hp_buff_title
+UI\TurnQueue_Panels.lua	Массовая провокация	ui.panel.mass_taunt_title
+UI\TurnQueue_Panels.lua	Ударить	ui.panel.hit
+UI\TurnQueue_Panels.lua	Исцелить	ui.panel.heal
+UI\TurnQueue_Panels.lua	Бафнуть	ui.panel.buff
+UI\TurnQueue_Panels.lua	Наложить	ui.panel.apply
+UI\TurnQueue_Panels.lua	Провоцировать	ui.panel.taunt
+UI\TurnQueue_Panels.lua	Готово	ui.panel.done
+UI\TurnQueue_Panels.lua	Отмена	ui.common.cancel
+UI\TurnQueue_Panels.lua	Выберите союзника (таргет)	ui.panel.choose_ally
+UI\TurnQueue_Panels.lua	Выберите цель	ui.panel.choose_target
+UI\TurnQueue_Panels.lua	Выберите NPC-цель	ui.panel.choose_npc_target
+UI\TurnQueue_Panels.lua	Выберите игрока	ui.panel.choose_player
+UI\TurnQueue_Panels.lua	Дух	stats.spirit.label
+UI\TurnQueue_Panels.lua	Снять рану	ui.action.remove_wound
+UI\TurnQueue_Panels.lua	Диспел	ui.action.dispel_title
+UI\TurnQueue_Panels.lua	Пурж	ui.bar.purge
+UI\TurnQueue_Panels.lua	Применить	ui.common.apply
+UI\TurnQueue_Panels.lua	|cFFAAAAAAОчередь|r	ui.queue.mode_queue
+UI\TurnQueue_Panels.lua	|cFFAAAAAAСвободный|r	ui.queue.mode_free
+UI\TurnQueue_Panels.lua	Ход противника	ui.queue.phase_enemy
+UI\TurnQueue_Panels.lua	Ход игроков	ui.queue.phase_players
+UI\TurnQueue_Panels.lua	Ход: 	ui.queue.label_turn
+UI\TurnQueue_Panels.lua	Раунд: 	ui.queue.label_round

@@ -1,0 +1,19 @@
+Sync\Core.lua	ABS: данные NPC не получены — нажмите «Обновить» на панели действий	combat.sync.no_npc_data
+Sync\Core.lua	Вы не в группе — данные брать не у кого.	combat.sync.not_in_group
+Sync\Core.lua	Запрошены данные текущей цели...	combat.sync.requested_target
+Sync\Core.lua	Запрошены данные всех NPC у ведущего...	combat.sync.requested_all
+Sync\Core.lua	Вы стали ведущим сессии	combat.sync.you_are_master
+Sync\Core.lua	Не удалось получить данные восстановления ни от одного игрока	combat.sync.recovery_failed
+Sync\Core.lua	Восстановление: нет доступных кандидатов	combat.sync.recovery_no_candidates
+Sync\Core.lua	ACTION_DONE не подтверждён — мастер мог не получить	combat.sync.action_done_no_ack
+Sync\Core.lua	снята	combat.sync.spec_removed
+Sync\Core.lua	|cFFFF6666Особое действие отклонено.|r	combat.sync.special_rejected
+Sync\Handlers.lua	%s изменил здоровье: %s → %s (%s%d)	combat.sync.hp_changed_log
+Sync\Handlers.lua	Снятие роли	combat.sync.role_removal_title
+Sync\Handlers.lua	Сброс характеристик	combat.sync.stats_reset_title
+Sync\Handlers.lua	Получен щит от мастера!	combat.sync.shield_from_master
+Sync\Handlers.lua	Рассинхрон NPC-данных, запрос ресинка...	combat.sync.desync_resync
+Sync\Handlers.lua	|cFFFF6666Мастер отклонил ваше особое действие.|r	combat.sync.special_rejected_by_master
+Sync\Handlers.lua	%s — бросок на выживание (%s): %s (%d%s) против DC %d → %s	combat.sync.survival_line
+Sync\Handlers.lua	УСПЕХ	combat.sync.survival_success
+Sync\Handlers.lua	ПРОВАЛ	combat.sync.survival_fail

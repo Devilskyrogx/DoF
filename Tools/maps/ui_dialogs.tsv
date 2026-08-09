@@ -1,0 +1,74 @@
+UI\Dialogs.lua	- Атака -	ui.menu.attack_header
+UI\Dialogs.lua	- Особое действие -	ui.menu.special_header
+UI\Dialogs.lua	- Исцеление -	ui.menu.heal_header
+UI\Dialogs.lua	- Щит -	ui.menu.shield_header
+UI\Dialogs.lua	- Раны -	ui.menu.wounds_header
+UI\Dialogs.lua	- Диспел -	ui.menu.dispel_header
+UI\Dialogs.lua	- Атакующие -	ui.menu.offensive_header
+UI\Dialogs.lua	- Защитные -	ui.menu.defensive_header
+UI\Dialogs.lua	- AoE Исцеление -	ui.aoe.heal_header
+UI\Dialogs.lua	Нет доступных действий	ui.menu.no_actions
+UI\Dialogs.lua	|cFF666666Нет доступных эффектов|r	ui.menu.no_effects
+UI\Dialogs.lua	 |cFF666666(нет энергии)|r	ui.menu.no_energy_suffix
+UI\Dialogs.lua	Бросок d20 + Сила. Мощная атака ближнего боя.	ui.action.attack_str_desc
+UI\Dialogs.lua	Бросок d20 + Ловкость. Точный удар или выстрел.	ui.action.attack_dex_desc
+UI\Dialogs.lua	Бросок d20 + Интеллект. Магическая атака.	ui.action.attack_int_desc
+UI\Dialogs.lua	Особое действие	ui.action.special
+UI\Dialogs.lua	|cFF9966FFОсобое действие|r	ui.action.special_colored
+UI\Dialogs.lua	Бросок d20 + характеристика по выбору мастера.\nПорог задаёт мастер.\nЭнергия: по решению мастера.	ui.action.special_desc
+UI\Dialogs.lua	Бросок d20 + Дух. Восстанавливает HP союзнику.	ui.action.heal_desc
+UI\Dialogs.lua	Наложить щит	ui.action.shield
+UI\Dialogs.lua	Бросок d20 + Дух. Создаёт щит, поглощающий урон.	ui.action.shield_desc
+UI\Dialogs.lua	Снять рану	ui.action.remove_wound
+UI\Dialogs.lua	Снять рану (Лекарь)	ui.action.remove_wound_title
+UI\Dialogs.lua	Бросок d20 + Дух против порога 16. При успехе снимает одно ранение с цели.	ui.action.remove_wound_desc
+UI\Dialogs.lua	Наложить DoT	ui.action.apply_dot
+UI\Dialogs.lua	Наложить эффект урона на NPC.\nУрон каждый раунд в течение нескольких раундов.	ui.action.apply_dot_desc
+UI\Dialogs.lua	Ослабить NPC	ui.action.weaken_npc
+UI\Dialogs.lua	Ослабление	ui.action.weaken
+UI\Dialogs.lua	Снижает защитный стат NPC на 1-3 (случ.) на 3 раунда.\nВыберите: Стойкость, Сноровка или Воля.\nСтоимость: 1 энергия	ui.action.weaken_desc
+UI\Dialogs.lua	Снять дебафф	ui.action.dispel
+UI\Dialogs.lua	Диспел	ui.action.dispel_title
+UI\Dialogs.lua	Снимает один дебафф с союзника.\nСтоимость: 1 энергия	ui.action.dispel_desc
+UI\Dialogs.lua	Ударить цель	ui.aoe.hit_target
+UI\Dialogs.lua	AoE удар	ui.aoe.hit_title
+UI\Dialogs.lua	Нанести урон выбранной цели.\nЦель нельзя атаковать повторно.	ui.aoe.hit_desc
+UI\Dialogs.lua	Завершить AoE	ui.aoe.finish_attack
+UI\Dialogs.lua	Завершить AoE атаку досрочно.	ui.aoe.finish_attack_desc
+UI\Dialogs.lua	Исцелить цель	ui.aoe.heal_target
+UI\Dialogs.lua	AoE исцеление	ui.aoe.heal_title
+UI\Dialogs.lua	AoE Исцеление	ui.aoe.heal_label
+UI\Dialogs.lua	Исцелить выбранного союзника.\nОдного союзника нельзя исцелить дважды.	ui.aoe.heal_desc
+UI\Dialogs.lua	Завершить AoE исцеление досрочно.	ui.aoe.finish_heal_desc
+UI\Dialogs.lua	Бафнуть цель	ui.aoe.buff_target
+UI\Dialogs.lua	AoE бафф	ui.aoe.buff_title
+UI\Dialogs.lua	Завершить AoE бафф досрочно.	ui.aoe.finish_buff_desc
+UI\Dialogs.lua	Завершить	ui.common.finish
+UI\Dialogs.lua	Отменить	ui.common.cancel_verb
+UI\Dialogs.lua	|cFF888888Отмена|r	ui.common.cancel_colored
+UI\Dialogs.lua	Эффект уже активен на цели	ui.effect.already_active
+UI\Dialogs.lua	урон	ui.effect.stat_damage
+UI\Dialogs.lua	Физическая сила, ближний бой, поднятие тяжестей.	ui.check.strength
+UI\Dialogs.lua	Ловкость, скорость, уклонение, стрельба.	ui.check.dexterity
+UI\Dialogs.lua	Интеллект, магия, знания, логика.	ui.check.intelligence
+UI\Dialogs.lua	Сила воли, харизма, исцеление.	ui.check.spirit
+UI\Dialogs.lua	Сопротивление яду, болезням, физ. эффектам.	ui.check.fortitude
+UI\Dialogs.lua	Уклонение от ловушек, AoE-атак.	ui.check.reflex
+UI\Dialogs.lua	Сопротивление ментальным атакам, страху.	ui.check.will
+UI\Dialogs.lua	Выберите роль	ui.role.select
+UI\Dialogs.lua	Сбросить	ui.role.reset
+UI\Dialogs.lua	Сбросить роль	ui.role.reset_title
+UI\Dialogs.lua	Убирает роль у игрока	ui.role.reset_desc
+UI\Dialogs.lua	Недостаточно энергии!	errors.not_enough_energy
+UI\Dialogs.lua	Нет цели для атаки	errors.no_attack_target
+UI\Dialogs.lua	Нельзя атаковать игрока	errors.cannot_attack_player
+UI\Dialogs.lua	Цель не имеет HP	errors.target_has_no_hp
+UI\Dialogs.lua	Сначала завершите AoE атаку!	errors.finish_aoe_first
+UI\Dialogs.lua	Роль уже выбрана! Смена только через ведущего.	errors.role_already_chosen
+UI\Dialogs.lua	Сила	stats.strength.label
+UI\Dialogs.lua	Ловкость	stats.dexterity.label
+UI\Dialogs.lua	Интеллект	stats.intelligence.label
+UI\Dialogs.lua	Дух	stats.spirit.label
+UI\Dialogs.lua	Стойкость	stats.fortitude.label
+UI\Dialogs.lua	Сноровка	stats.reflex.label
+UI\Dialogs.lua	Воля	stats.will.label

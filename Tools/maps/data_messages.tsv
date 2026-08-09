@@ -1,0 +1,27 @@
+Data\Effects.lua	Неизвестный эффект	effects.deny.unknown
+Data\Effects.lua	Только мастер может использовать этот эффект	effects.deny.master_only
+Data\Effects.lua	Только мастер может использовать эту функцию	errors.gm_only_function
+Data\Effects.lua	Недостаточно энергии!	errors.not_enough_energy
+Data\Effects.lua	Применение эффекта	effects.action.apply
+Data\Effects.lua	Ослабление	ui.action.weaken
+Data\Effects.lua	%s накладывает %s на %s	effects.msg.applies
+Data\Effects.lua	%s [AoE] накладывает %s на %s	effects.msg.applies_aoe
+Data\Effects.lua	[AoE] %s наложен на %s	effects.msg.applied_aoe
+Data\Effects.lua	%s усилен на %s (стаки: %d)	effects.msg.stacked
+Data\Effects.lua	%s накладывает |cFF%s%s|r (-%d) на %s на %d раунда	effects.msg.applies_weakness
+Data\Effects.lua	%s начинает действовать на %s	effects.msg.starts_on
+Data\Effects.lua	%s получает %d урона от %s. HP: %d/%d	effects.msg.dot_damage_hp
+Data\Effects.lua	%s получает %d урона от %s	effects.msg.dot_damage
+Data\Effects.lua	%s восстанавливает %d HP	effects.msg.hot_heal
+Data\Effects.lua	Только Healer может снимать дебаффы	errors.healer_only_dispel
+Data\Effects.lua	Недостаточно энергии для диспела	errors.not_enough_energy_dispel
+Data\Effects.lua	Нет дебаффов для снятия	effects.msg.no_debuffs
+Data\Effects.lua	Только мастер или целитель может снимать баффы	errors.gm_or_healer_only_purge
+Data\Effects.lua	Нет баффов для снятия	effects.msg.no_buffs
+Data\Effects.lua	НПЦ	effects.msg.npc_fallback
+Data\Passives.lua	%s регенерирует %s HP (%d/%d)	passives.msg.regenerates
+Data\Passives.lua	%s адаптируется к атакам %s! +%d к %s	passives.msg.adapts
+Data\Passives.lua	|cFFFF6600Взрыв!|r %s получает %s урона!	passives.msg.explosion
+Data\Passives.lua	|cFFFF6666Взорвать|r	passives.dlg.explode_btn
+Data\Passives.lua	Отмена	ui.common.cancel
+Data\Passives.lua	Выберите хотя бы одну цель!	passives.dlg.select_target

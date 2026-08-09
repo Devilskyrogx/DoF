@@ -1,0 +1,29 @@
+Combat\Combat.lua	%s использует %s против %s.	combat.uses
+Combat\Combat.lua	Результат: %s (%d+%d) %s %d - %s	combat.roll_result
+Combat\Combat.lua	Результат: %s (%d+%d)	combat.roll_result_simple
+Combat\Combat.lua	%s отравлен %s! Мгновенный урон: |cFFFF0000%d|r	combat.poisoned_instant
+Combat\Combat.lua	Яд %s → %s: -%d HP	combat.poison_log
+Combat\Combat.lua	%s отравлен %s! (урон %d, %d р.)	combat.poisoned
+Combat\Combat.lua	%s выбирает крит-бонус: %s (урон %s -> %s)	combat.crit_bonus_damage
+Combat\Combat.lua	%s выбирает крит-бонус: %s	combat.crit_bonus
+Combat\Combat.lua	%s выбирает крит-бонус: %s %s	combat.crit_bonus_target
+Combat\Combat.lua	|cFFFF8800Шипы|r %s наносят |cFFFF0000%d|r урона %s!	combat.thorns_damage
+Combat\Combat.lua	Шипы %s → %s: -%d HP	combat.thorns_log
+Combat\Combat.lua	|cFFFF8800Шипы|r %s срабатывают! Защищайтесь!	combat.thorns_trigger
+Combat\Combat.lua	|cFFFF0000Берсерк!|r %s в ярости контратакует! Защищайтесь!	combat.berserk
+Combat\Combat.lua	|cFFFF6666Контратака!|r %s наносит ответный удар! Защищайтесь!	combat.counterattack
+Combat\Combat.lua	%s совершает: %s (%s) - %s	combat.special_performs
+Combat\Combat.lua	%s пытается: %s (%s). Результат: %s (%d+%d) - %s	combat.special_crit_fail_line
+Combat\Combat.lua	%s совершает: %s (%s). Результат: %s (%d+%d) >= %d - %s	combat.special_success_line
+Combat\Combat.lua	%s пытается: %s (%s). Результат: %s (%d+%d) < %d - %s	combat.special_fail_line
+Combat\Combat.lua	%s [Особое] -> %s: Урон %s	combat.special_damage_log
+Combat\Combat.lua	%s исцеляет %s (%s).	combat.heals
+Combat\Combat.lua	Бросок: %s (%d+%d) %s %d - %s	combat.roll_short
+Combat\Combat.lua	Бросок: %s (%d+%d) - %s	combat.roll_short_no_threshold
+Combat\Combat.lua	%s восстанавливает 1 энергию для %s	combat.energy_restored_log
+Combat\Combat.lua	%s накладывает щит на %s. Следующий урон будет полностью поглощён.	combat.shield_applied_log
+Combat\Combat.lua	%s пытается снять рану с %s.	combat.tries_remove_wound
+Combat\Combat.lua	Бросок %s: %s (%d+%d) %s %d - %s	combat.roll_line
+Combat\Combat.lua	%s пытается снять дебафф с %s.	combat.tries_dispel
+Combat\Combat.lua	%s пытается снять бафф с %s.	combat.tries_purge
+Combat\Combat.lua	%s совершает проверку %s.	combat.check_line

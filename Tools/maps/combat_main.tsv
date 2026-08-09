@@ -1,0 +1,75 @@
+Combat\Combat.lua	Выберите роль! (/absrole)	errors.choose_role
+Combat\Combat.lua	Сначала завершите AoE атаку!	errors.finish_aoe_first
+Combat\Combat.lua	Сначала завершите AoE исцеление!	errors.finish_aoe_heal
+Combat\Combat.lua	Сначала завершите AoE бафф!	errors.finish_aoe_buff
+Combat\Combat.lua	Сначала завершите AoE провокацию!	errors.finish_aoe_taunt
+Combat\Combat.lua	Сначала завершите текущее AoE действие!	errors.finish_current_aoe
+Combat\Combat.lua	Нет цели!	errors.no_target
+Combat\Combat.lua	Нельзя атаковать игроков!	errors.cannot_attack_players
+Combat\Combat.lua	Ожидание синхронизации данных NPC...	errors.awaiting_npc_sync
+Combat\Combat.lua	У цели не установлен HP!	errors.target_hp_not_set
+Combat\Combat.lua	Цель мертва!	errors.target_dead
+Combat\Combat.lua	Особое действие уже выполняется!	errors.special_in_progress
+Combat\Combat.lua	Особое действие отклонено мастером в этом раунде!	errors.special_rejected_this_round
+Combat\Combat.lua	Режим особого действия не активен!	errors.special_mode_inactive
+Combat\Combat.lua	Все цели уже выбраны!	errors.all_targets_chosen
+Combat\Combat.lua	Выберите цель!	errors.select_target
+Combat\Combat.lua	Цель должна быть игроком!	errors.target_must_be_player
+Combat\Combat.lua	Эта цель уже выбрана! Выберите другую.	errors.target_already_chosen
+Combat\Combat.lua	Эта цель уже атакована! Выберите другую.	errors.target_already_attacked
+Combat\Combat.lua	Ошибка: эффект не найден!	errors.effect_not_found
+Combat\Combat.lua	Критическое ранение может снять только мастер.	errors.critical_wound_gm_only
+Combat\Combat.lua	Выберите NPC-цель!	errors.select_npc_target
+Combat\Combat.lua	Пурж работает только на NPC!	errors.purge_npc_only
+Combat\Combat.lua	Только целитель может восстанавливать энергию!	errors.healer_only_energy
+Combat\Combat.lua	Можно восстановить энергию только игроку!	errors.energy_players_only
+Combat\Combat.lua	Нельзя восстановить энергию самому себе!	errors.energy_not_self
+Combat\Combat.lua	Недостаточно энергии!	errors.not_enough_energy
+Combat\Combat.lua	Только целители могут накладывать щит!	errors.healer_only_shield
+Combat\Combat.lua	Щит недавно разрушен! Дождитесь окончания эффекта.	errors.shield_recently_broken
+Combat\Combat.lua	Только целители могут снимать раны!	errors.healer_only_wound
+Combat\Combat.lua	Можно снимать раны только с игроков!	errors.wound_players_only
+Combat\Combat.lua	Не удалось снять рану.	errors.wound_remove_failed
+Combat\Combat.lua	Только целители могут снимать дебаффы!	errors.healer_only_dispel
+Combat\Combat.lua	Можно снимать дебаффы только с игроков!	errors.dispel_players_only
+Combat\Combat.lua	Не удалось снять дебафф.	errors.dispel_failed
+Combat\Combat.lua	Только целители могут снимать баффы!	errors.healer_only_purge
+Combat\Combat.lua	Можно снимать баффы только с НПЦ!	errors.purge_npc_only_strict
+Combat\Combat.lua	Не удалось снять бафф.	errors.purge_failed
+Combat\Combat.lua	Сначала выберите крит-бонус!	errors.choose_crit_bonus_first
+Combat\Combat.lua	крит. провал	combat.result.crit_fail
+Combat\Combat.lua	крит. успех	combat.result.crit_success
+Combat\Combat.lua	уклонение	combat.result.dodge
+Combat\Combat.lua	удачно	combat.result.success
+Combat\Combat.lua	неудачно	combat.result.fail
+Combat\Combat.lua	неудачно (усталость)	combat.result.fail_fatigue
+Combat\Combat.lua	отражено	combat.result.reflected
+Combat\Combat.lua	крит. провал!	combat.result.crit_fail_excl
+Combat\Combat.lua	крит. успех!	combat.result.crit_success_excl
+Combat\Combat.lua	успех!	combat.result.success_excl
+Combat\Combat.lua	неудача	combat.result.failure
+Combat\Combat.lua	Атака	combat.action.attack
+Combat\Combat.lua	Особое действие	combat.action.special
+Combat\Combat.lua	Лечение	combat.action.heal
+Combat\Combat.lua	Щит	combat.action.shield
+Combat\Combat.lua	Снятие раны	combat.action.remove_wound
+Combat\Combat.lua	Диспел	combat.action.dispel
+Combat\Combat.lua	Пурж	combat.action.purge
+Combat\Combat.lua	Восстановление энергии	combat.action.restore_energy
+Combat\Combat.lua	одобрено мастером	combat.special_approved_by_gm
+Combat\Combat.lua	+1 энергия	combat.bonus_energy
+Combat\Combat.lua	Полное исцеление	combat.bonus_full_heal
+Combat\Combat.lua	+3 щита	combat.bonus_shield_3
+Combat\Combat.lua	Щит (1 удар)	combat.bonus_shield_1
+Combat\Combat.lua	Выберите цель для баффа и нажмите кнопку применения.	combat.choose_buff_target
+Combat\Combat.lua	Выберите NPC-цель для атаки.	combat.choose_npc_target
+Combat\Combat.lua	Выберите игрока для снятия раны.	combat.choose_wound_target
+Combat\Combat.lua	Выберите игрока для диспела.	combat.choose_dispel_target
+Combat\Combat.lua	Выберите NPC-цель для пуржа.	combat.choose_purge_target
+Combat\Combat.lua	Особое действие отменено!	combat.special_cancelled
+Combat\Combat.lua	Рана успешно снята!	combat.wound_removed_success
+Combat\Combat.lua	У вас нет ранений.	combat.no_wounds_self
+Combat\Combat.lua	На цели нет дебаффов для снятия.	combat.no_debuffs_to_remove
+Combat\Combat.lua	На цели нет баффов для снятия.	combat.no_buffs_to_remove
+Combat\Combat.lua	Щит уже активен!	combat.shield_already_active
+Combat\Combat.lua	Дух	stats.spirit.label

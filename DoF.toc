@@ -1,0 +1,125 @@
+## Interface: 90207
+## Title: DoF - Dice of Fate
+## Notes: Ролевая боевая система d20
+## Author: Skyrogx
+## Version: 1.0
+## SavedVariables: DoF_DB
+
+# ═══════════════════════════════════════════════════════════
+# СОВМЕСТИМОСТЬ (загружается первым!)
+# ═══════════════════════════════════════════════════════════
+
+Core\Compat.lua
+
+# ═══════════════════════════════════════════════════════════
+# БИБЛИОТЕКИ
+# ═══════════════════════════════════════════════════════════
+
+# Base
+Libs\LibStub\LibStub.lua
+Libs\CallbackHandler-1.0\CallbackHandler-1.0.lua
+
+# Ace3 Core
+Libs\AceAddon-3.0\AceAddon-3.0.xml
+Libs\AceEvent-3.0\AceEvent-3.0.xml
+Libs\AceDB-3.0\AceDB-3.0.xml
+Libs\AceTimer-3.0\AceTimer-3.0.xml
+
+# Ace3 Comm
+Libs\AceSerializer-3.0\AceSerializer-3.0.xml
+Libs\AceComm-3.0\AceComm-3.0.xml
+
+# ═══════════════════════════════════════════════════════════
+# ЛОКАЛИЗАЦИЯ (до данных и интерфейса!)
+# ═══════════════════════════════════════════════════════════
+
+Locale\Engine.lua
+
+# enUS грузится всегда — это fallback для непереведённых ключей
+Locale\enUS\Core.lua
+Locale\enUS\UI.lua
+Locale\enUS\Combat.lua
+Locale\enUS\Effects.lua
+Locale\enUS\Passives.lua
+Locale\enUS\NPC.lua
+Locale\enUS\Errors.lua
+
+Locale\ruRU\Core.lua
+Locale\ruRU\UI.lua
+Locale\ruRU\Combat.lua
+Locale\ruRU\Effects.lua
+Locale\ruRU\Passives.lua
+Locale\ruRU\NPC.lua
+Locale\ruRU\Errors.lua
+
+# Глобалы DoF_L_* для XML — после всех локалей, до UI\Frames.xml
+Locale\Globals.lua
+
+# ═══════════════════════════════════════════════════════════
+# ЯДРО
+# ═══════════════════════════════════════════════════════════
+
+Core\Config.lua
+Core\Utils.lua
+Core\Events.lua
+
+# ═══════════════════════════════════════════════════════════
+# ДАННЫЕ
+# ═══════════════════════════════════════════════════════════
+
+Data\Stats.lua
+Data\Units.lua
+Data\Effects.lua
+Data\Passives.lua
+Data\NPCLibrary.lua
+
+# ═══════════════════════════════════════════════════════════
+# СИНХРОНИЗАЦИЯ
+# ═══════════════════════════════════════════════════════════
+
+Sync\Core.lua
+Sync\Security.lua
+Sync\Handlers.lua
+
+# ═══════════════════════════════════════════════════════════
+# БОЙ
+# ═══════════════════════════════════════════════════════════
+
+Combat\Combat.lua
+Combat\AoE.lua
+Combat\Defense.lua
+Combat\TurnSystem.lua
+Combat\TurnSystem_Sync.lua
+
+# ═══════════════════════════════════════════════════════════
+# ИНТЕРФЕЙС
+# ═══════════════════════════════════════════════════════════
+
+UI\Frames.xml
+UI\MainFrame.lua
+UI\MainFrame_GM.lua
+UI\UnitFrames.lua
+UI\Effects.lua
+UI\Nameplates.lua
+UI\MinimapButton.lua
+UI\CharacterSidebar.lua
+UI\CombatLog.lua
+UI\Dialogs.lua
+UI\Dialogs_NPC.lua
+UI\Dialogs_Combat.lua
+UI\Dialogs_Effects.lua
+UI\Dialogs_Misc.lua
+UI\Dialogs_Wound.lua
+UI\NPCLibrary.lua
+UI\NPCLibrary_Edit.lua
+UI\TurnQueue.lua
+UI\TurnQueue_Panels.lua
+UI\ActionBar.lua
+UI\Settings.lua
+
+# ═══════════════════════════════════════════════════════════
+# ИНИЦИАЛИЗАЦИЯ (в конце!)
+# ═══════════════════════════════════════════════════════════
+
+Core\Init.lua
+Core\Aliases.lua

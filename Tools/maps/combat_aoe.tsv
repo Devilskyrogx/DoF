@@ -1,0 +1,49 @@
+Combat\AoE.lua	Выберите роль! (/absrole)	errors.choose_role
+Combat\AoE.lua	AoE атака	combat.action.aoe_attack
+Combat\AoE.lua	AoE лечение	combat.action.aoe_heal
+Combat\AoE.lua	AoE бафф	combat.action.aoe_buff
+Combat\AoE.lua	AoE щит	combat.action.aoe_shield
+Combat\AoE.lua	AoE атака уже активна!	errors.aoe_attack_active
+Combat\AoE.lua	AoE исцеление уже активно!	errors.aoe_heal_active
+Combat\AoE.lua	AoE бафф уже активен!	errors.aoe_buff_active
+Combat\AoE.lua	AoE щит уже активен!	errors.aoe_shield_active
+Combat\AoE.lua	Сначала завершите AoE атаку!	errors.finish_aoe_first
+Combat\AoE.lua	Сначала завершите AoE исцеление!	errors.finish_aoe_heal
+Combat\AoE.lua	Сначала завершите AoE бафф!	errors.finish_aoe_buff
+Combat\AoE.lua	Сначала завершите AoE щит!	errors.finish_aoe_shield
+Combat\AoE.lua	Сначала завершите особое действие!	errors.finish_special
+Combat\AoE.lua	%s активирует AoE %s!	combat.aoe.activates
+Combat\AoE.lua	%s активирует AoE исцеление!	combat.aoe.activates_heal
+Combat\AoE.lua	%s активирует AoE щит! Целей: %s	combat.aoe.activates_shield
+Combat\AoE.lua	Бросок: %s - %s! Целей: %s	combat.aoe.roll_crit
+Combat\AoE.lua	Бросок: %s - %s Целей: %s	combat.aoe.roll_success
+Combat\AoE.lua	Целей: %s	combat.aoe.targets_line
+Combat\AoE.lua	крит. успех	combat.result.crit_success
+Combat\AoE.lua	успех!	combat.result.success_excl
+Combat\AoE.lua	крит!	combat.result.crit_short
+Combat\AoE.lua	удар!	combat.result.hit_short
+Combat\AoE.lua	AoE режим не активен!	errors.aoe_mode_inactive
+Combat\AoE.lua	AoE исцеление не активно!	errors.aoe_heal_inactive
+Combat\AoE.lua	AoE бафф не активен!	errors.aoe_buff_inactive
+Combat\AoE.lua	AoE щит не активен!	errors.aoe_shield_inactive
+Combat\AoE.lua	Все удары использованы!	errors.all_hits_used
+Combat\AoE.lua	Все исцеления использованы!	errors.all_heals_used
+Combat\AoE.lua	Все баффы использованы!	errors.all_buffs_used
+Combat\AoE.lua	Все щиты использованы!	errors.all_shields_used
+Combat\AoE.lua	Выберите цель!	errors.select_target
+Combat\AoE.lua	Нельзя атаковать игроков!	errors.cannot_attack_players
+Combat\AoE.lua	Эта цель уже атакована! Выберите другую.	errors.target_already_attacked
+Combat\AoE.lua	Эта цель уже исцелена! Выберите другую.	errors.target_already_healed
+Combat\AoE.lua	Этот игрок уже получил бафф! Выберите другого.	errors.player_already_buffed
+Combat\AoE.lua	Можно бафать только игроков!	errors.buff_players_only_short
+Combat\AoE.lua	Неизвестный эффект!	errors.unknown_effect_short
+Combat\AoE.lua	У цели не установлен HP!	errors.target_hp_not_set
+Combat\AoE.lua	Цель мертва!	errors.target_dead
+Combat\AoE.lua	Только целители могут использовать AoE щит!	errors.healer_only_aoe_shield
+Combat\AoE.lua	%s [AoE %s] -> %s: %s Урон: %s	combat.aoe.attack_log
+Combat\AoE.lua	%s [AoE Исцеление] -> %s: %s Лечение: %s	combat.aoe.heal_log
+Combat\AoE.lua	AoE атака отменена!	combat.aoe.attack_cancelled
+Combat\AoE.lua	AoE исцеление отменено!	combat.aoe.heal_cancelled
+Combat\AoE.lua	AoE бафф отменён!	combat.aoe.buff_cancelled
+Combat\AoE.lua	AoE щит отменён!	combat.aoe.shield_cancelled
+Combat\AoE.lua	Щит уже активен! Выберите другую цель.	combat.aoe.shield_already_here

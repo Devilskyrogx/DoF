@@ -1,0 +1,42 @@
+UI\Dialogs_Combat.lua	Вас атакуют	ui.combat.attacked_title
+UI\Dialogs_Combat.lua	Проверка	ui.combat.check_title
+UI\Dialogs_Combat.lua	ЗАЩИТА	ui.combat.defend_btn
+UI\Dialogs_Combat.lua	БРОСОК	ui.combat.roll_btn
+UI\Dialogs_Combat.lua	Выберите защиту	ui.combat.choose_defense
+UI\Dialogs_Combat.lua	Критический удар	ui.combat.crit_hit_title
+UI\Dialogs_Combat.lua	Критическое исцеление	ui.combat.crit_heal_title
+UI\Dialogs_Combat.lua	Крит защиты	ui.combat.crit_defense_title
+UI\Dialogs_Combat.lua	Выберите бонус:	ui.combat.choose_bonus
+UI\Dialogs_Combat.lua	+1 энергия	ui.combat.bonus_energy
+UI\Dialogs_Combat.lua	Полное исцеление	ui.combat.bonus_full_heal
+UI\Dialogs_Combat.lua	Щит (1 удар)	ui.combat.bonus_shield
+UI\Dialogs_Combat.lua	Контратака	ui.combat.bonus_counterattack
+UI\Dialogs_Combat.lua	+2 HP союзнику	ui.combat.bonus_ally_hp
+UI\Dialogs_Combat.lua	Щит активирован!	ui.combat.shield_activated
+UI\Dialogs_Combat.lua	Время истекло! Случайный выбор крит-бонуса.	ui.combat.time_up_crit
+UI\Dialogs_Combat.lua	Время истекло! Случайный выбор бонуса защиты.	ui.combat.time_up_defense
+UI\Dialogs_Combat.lua	Запрос на особое действие	ui.combat.special_request_title
+UI\Dialogs_Combat.lua	Опишите ваше особое действие (до 1000 символов)	ui.combat.special_request_desc
+UI\Dialogs_Combat.lua	Отправить запрос	ui.combat.send_request
+UI\Dialogs_Combat.lua	Отмена	ui.common.cancel
+UI\Dialogs_Combat.lua	Вы мастер - одобрите или отклоните своё действие.	ui.combat.you_are_gm_approve
+UI\Dialogs_Combat.lua	Запрос на особое действие отправлен мастеру. Ожидайте одобрения...	ui.combat.request_sent
+UI\Dialogs_Combat.lua	Тип действия:	ui.combat.action_type_label
+UI\Dialogs_Combat.lua	Выберите эффект:	ui.combat.choose_effect
+UI\Dialogs_Combat.lua	Кол-во целей:	ui.combat.target_count
+UI\Dialogs_Combat.lua	Урон мин:	ui.combat.damage_min
+UI\Dialogs_Combat.lua	макс:	ui.combat.damage_max
+UI\Dialogs_Combat.lua	Без броска (автоуспех)	ui.combat.no_roll_label
+UI\Dialogs_Combat.lua	Порог:	ui.combat.threshold_label
+UI\Dialogs_Combat.lua	Характеристика:	ui.combat.stat_label
+UI\Dialogs_Combat.lua	Запросить энергию	ui.combat.request_energy
+UI\Dialogs_Combat.lua	Одобрить	ui.combat.approve
+UI\Dialogs_Combat.lua	Отклонить	ui.combat.reject
+UI\Dialogs_Combat.lua	Пробитие защиты	ui.combat.shred_title
+UI\Dialogs_Combat.lua	Стойкость	stats.fortitude.label
+UI\Dialogs_Combat.lua	Сноровка	stats.reflex.label
+UI\Dialogs_Combat.lua	Воля	stats.will.label
+UI\Dialogs_Combat.lua	Получена новая атака, пока не закрыта предыдущая — сообщите мастеру!	errors.new_attack_while_open
+UI\Dialogs_Combat.lua	Введите описание действия!	errors.enter_action_desc
+UI\Dialogs_Combat.lua	Текст слишком длинный!	errors.text_too_long
+UI\Dialogs_Combat.lua	Выберите эффект для баффа!	errors.select_buff_effect

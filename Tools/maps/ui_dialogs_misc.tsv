@@ -1,0 +1,4 @@
+UI\Dialogs_Misc.lua	Настройки ABS	ui.settings.title
+UI\Dialogs_Misc.lua	Масштаб интерфейса:	ui.settings.ui_scale
+UI\Dialogs_Misc.lua	Сбросить (100%)	ui.settings.reset_100
+UI\Dialogs_Misc.lua	ABS — Справка команд	ui.help.title

@@ -1,0 +1,58 @@
+Combat\Defense.lua	%s перехватывает урон за %s!	combat.def.redirect_absorb_log
+Combat\Defense.lua	крит. провал	combat.result.crit_fail
+Combat\Defense.lua	крит. защита	combat.result.crit_defense
+Combat\Defense.lua	удачно	combat.result.success
+Combat\Defense.lua	неудачно	combat.result.fail
+Combat\Defense.lua	%s атакует %s.	combat.def.attacks
+Combat\Defense.lua	%s защищается %s: %s (%d+%d) %s %d - %s	combat.def.defends_line
+Combat\Defense.lua	%s выбирает крит защиты: %s (урон: %s)	combat.def.crit_defense_bonus_damage
+Combat\Defense.lua	%s выбирает крит защиты: %s	combat.def.crit_defense_bonus
+Combat\Defense.lua	Контратака	combat.label.counterattack
+Combat\Defense.lua	+1 энергия	combat.bonus_energy
+Combat\Defense.lua	+2 HP союзнику	ui.combat.bonus_ally_hp
+Combat\Defense.lua	Стойкость	stats.fortitude.label
+Combat\Defense.lua	Сноровка	stats.reflex.label
+Combat\Defense.lua	%s пробивает защиту %s: %s	combat.def.shred_log
+Combat\Defense.lua	Бафф не активен!	errors.buff_not_active
+Combat\Defense.lua	Выберите цель!	errors.select_target
+Combat\Defense.lua	Можно баффать только игроков!	errors.buff_players_only
+Combat\Defense.lua	Время на контратаку истекло!	combat.def.counter_timeout
+Combat\Defense.lua	Контратака не активна!	errors.counter_inactive
+Combat\Defense.lua	Бой завершён!	errors.combat_finished
+Combat\Defense.lua	Нельзя контратаковать игроков!	errors.cannot_counter_players
+Combat\Defense.lua	У цели не установлен HP!	errors.target_hp_not_set
+Combat\Defense.lua	Цель мертва!	errors.target_dead
+Combat\Defense.lua	%s [Контратака] -> %s: %s HP: %s	combat.def.counter_log
+Combat\Defense.lua	%s не успел защититься - %s!	combat.def.no_defense_line
+Combat\Defense.lua	автонеудача	combat.label.auto_fail
+Combat\Defense.lua	%s %s %d HP (мастер). HP: %d/%d	combat.def.gm_hp_log
+Combat\Defense.lua	получил	combat.label.gained
+Combat\Defense.lua	потерял	combat.label.lost
+Combat\Defense.lua	%s получил исцеление от %s. HP: %d/%d	combat.def.healed_log
+Combat\Defense.lua	Щит уже активен! Новый щит не наложен.	combat.def.shield_already
+Combat\Defense.lua	Щит недавно разрушен! Новый щит не наложен.	combat.def.shield_broken
+Combat\Defense.lua	Гибрид	combat.label.hybrid
+Combat\Defense.lua	%s атакует '%s': урон %s, порог %d, защита: %s	combat.def.npc_attack_log
+Combat\Defense.lua	Мастер	combat.label.gm
+Combat\Defense.lua	Добавлено	combat.label.hp_added
+Combat\Defense.lua	Отнято	combat.label.hp_removed
+Combat\Defense.lua	Изменил HP игрока '%s': %+d	combat.def.hp_change_log
+Combat\Defense.lua	Только танк может использовать Провокацию!	errors.tank_only_taunt
+Combat\Defense.lua	Провокация	combat.action.taunt
+Combat\Defense.lua	Сначала завершите текущее AoE действие!	errors.finish_current_aoe
+Combat\Defense.lua	Выберите NPC цель!	errors.select_npc_target_short
+Combat\Defense.lua	Провокация действует только на NPC!	errors.taunt_npc_only
+Combat\Defense.lua	Цель мертва или не найдена!	errors.target_dead_or_missing
+Combat\Defense.lua	%s провоцирует %s! NPC обязан атаковать танка (%d р.)	combat.def.taunt_log
+Combat\Defense.lua	Только танк может использовать Массовую провокацию!	errors.tank_only_mass_taunt
+Combat\Defense.lua	Массовая провокация	combat.action.mass_taunt
+Combat\Defense.lua	AoE провокация не активна!	errors.aoe_taunt_inactive
+Combat\Defense.lua	%s использует %s! (%d целей)	combat.def.mass_taunt_log
+Combat\Defense.lua	Массовую провокацию	combat.label.mass_taunt_acc
+Combat\Defense.lua	Массовая провокация отменена.	combat.def.mass_taunt_cancelled
+Combat\Defense.lua	Только танк может использовать Перехват урона!	errors.tank_only_redirect
+Combat\Defense.lua	Перехват урона	combat.action.redirect
+Combat\Defense.lua	Выберите цель (союзника)!	errors.select_ally_target
+Combat\Defense.lua	Перехват работает только на игроков!	errors.redirect_players_only
+Combat\Defense.lua	Нельзя перехватывать урон за себя!	errors.redirect_not_self
+Combat\Defense.lua	%s перехватывает следующую атаку за %s!	combat.def.redirect_log

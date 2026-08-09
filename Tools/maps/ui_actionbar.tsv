@@ -1,0 +1,61 @@
+UI\ActionBar.lua	Атака	ui.bar.attack
+UI\ActionBar.lua	Сила	stats.strength.label
+UI\ActionBar.lua	Ловкость	stats.dexterity.label
+UI\ActionBar.lua	Интеллект	stats.intelligence.label
+UI\ActionBar.lua	Лечение	ui.bar.heal
+UI\ActionBar.lua	Восст. энергии	ui.bar.restore_energy
+UI\ActionBar.lua	Помощь	ui.bar.support
+UI\ActionBar.lua	Рана	ui.bar.wound
+UI\ActionBar.lua	Диспел	ui.action.dispel_title
+UI\ActionBar.lua	Пурж	ui.bar.purge
+UI\ActionBar.lua	Эффект	ui.bar.effect
+UI\ActionBar.lua	Особое	ui.bar.special
+UI\ActionBar.lua	Танк	ui.bar.tank
+UI\ActionBar.lua	Перехват	ui.bar.redirect
+UI\ActionBar.lua	Провокация	ui.bar.taunt
+UI\ActionBar.lua	Масс. пров.	ui.bar.taunt_aoe
+UI\ActionBar.lua	Проверка	ui.bar.check
+UI\ActionBar.lua	Обновить	ui.bar.refresh
+UI\ActionBar.lua	ЛКМ: Щит на цель (кд: 2 хода)\nПКМ: AoE щит (до 4 целей, кд: 3 хода, 2 энергии)\nПоглощает весь урон от 1 удара	ui.bar.shield_tooltip
+UI\ActionBar.lua	Наложить эффект (DoT / дебафф)\nОткрывает меню выбора	ui.bar.effect_tooltip
+UI\ActionBar.lua	Особое действие\nОтправляет запрос мастеру на одобрение\nЗатраты энергии по запросу мастера	ui.bar.special_tooltip
+UI\ActionBar.lua	Пропустить ход (+1 энергия)	ui.bar.skip_tooltip
+UI\ActionBar.lua	Запросить данные NPC у ведущего\n\nЕсли у NPC «Нет данных» или слетел шаблон —\nнажмите, чтобы запросить ресинк.\n\nЕсли выбран NPC без данных — точечный запрос.\nИначе — полный ресинк всех NPC.\n\nКД: 5 секунд	ui.bar.refresh_tooltip
+UI\ActionBar.lua	Панель способностей	ui.bar.title
+UI\ActionBar.lua	Позиция панели действий сброшена	ui.bar.position_reset
+UI\ActionBar.lua	Панель действий включена	ui.bar.enabled
+UI\ActionBar.lua	Панель действий выключена	ui.bar.disabled
+UI\ActionBar.lua	ЛКМ - атака | ПКМ - стата	ui.tip.attack_hint
+UI\ActionBar.lua	Восстановление энергии	ui.tip.restore_energy_title
+UI\ActionBar.lua	Передаёт 1 энергию союзнику	ui.tip.restore_energy_desc
+UI\ActionBar.lua	Стоимость: 1 энергия	ui.tip.cost_1_energy
+UI\ActionBar.lua	Не работает на себя	ui.tip.not_on_self
+UI\ActionBar.lua	ЛКМ - передать | ПКМ - выбор	ui.tip.restore_hint
+UI\ActionBar.lua	Бросок d20 + Дух	ui.tip.heal_roll
+UI\ActionBar.lua	ЛКМ - лечить | ПКМ - выбор	ui.tip.heal_hint
+UI\ActionBar.lua	Снимает 1 рану с союзника	ui.tip.wound_desc
+UI\ActionBar.lua	Бросок d20 + Дух, порог: 16	ui.tip.roll_spirit_16
+UI\ActionBar.lua	Снимает дебафф с союзника	ui.tip.dispel_desc
+UI\ActionBar.lua	Бросок d20 + Дух, порог: 14	ui.tip.roll_spirit_14
+UI\ActionBar.lua	Снимает бафф с НПЦ	ui.tip.purge_desc
+UI\ActionBar.lua	ЛКМ - действие | ПКМ - выбор	ui.tip.support_hint
+UI\ActionBar.lua	AoE: Исцеление	ui.tip.aoe_heal_title
+UI\ActionBar.lua	Лечит 2-4 союзника	ui.tip.aoe_heal_desc
+UI\ActionBar.lua	Бросок d20 + Дух, 20 = крит	ui.tip.aoe_heal_roll
+UI\ActionBar.lua	Урон по 2-4 целям	ui.tip.aoe_damage_desc
+UI\ActionBar.lua	Авто-попадание, 20 = крит	ui.tip.aoe_auto_hit
+UI\ActionBar.lua	ЛКМ - AoE | ПКМ - стата	ui.tip.aoe_hint
+UI\ActionBar.lua	Не тратит ход	ui.tip.no_turn_cost
+UI\ActionBar.lua	NPC обязан атаковать танка (2 р.)	ui.tip.taunt_desc
+UI\ActionBar.lua	1 энергии | КД: 2 хода	ui.tip.taunt_cost
+UI\ActionBar.lua	Провокация нескольких NPC (2 р.)	ui.tip.taunt_aoe_desc
+UI\ActionBar.lua	2 энергии | КД: 3 хода	ui.tip.taunt_aoe_cost
+UI\ActionBar.lua	Следующий удар по союзнику идет на танка	ui.tip.redirect_desc
+UI\ActionBar.lua	Бесплатно | КД: 2 хода	ui.tip.redirect_cost
+UI\ActionBar.lua	ЛКМ - использовать | ПКМ - выбор	ui.tip.tank_hint
+UI\ActionBar.lua	Усиление (выбор стата)	ui.tip.empower_choose
+UI\ActionBar.lua	Укрепление (выбор стата)	ui.tip.fortify_choose
+UI\ActionBar.lua	Усиление / Укрепление	ui.tip.empower_fortify
+UI\ActionBar.lua	ПКМ - AoE бафф	ui.tip.aoe_buff_hint
+UI\ActionBar.lua	Выбор баффа	ui.tip.buff_choose
+UI\ActionBar.lua	AoE бафф доступен только целителю!	errors.aoe_buff_healer_only

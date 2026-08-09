@@ -1,0 +1,26 @@
+UI\Dialogs_NPC.lua	|cFF888888Нет цели|r	ui.npcdlg.no_target
+UI\Dialogs_NPC.lua	|cFF888888Нет игрока|r	ui.npcdlg.no_player
+UI\Dialogs_NPC.lua	Выберите цель!	errors.select_target
+UI\Dialogs_NPC.lua	Нельзя настроить игрока! Только NPC.	errors.cannot_setup_player
+UI\Dialogs_NPC.lua	Введите корректное HP!	errors.invalid_hp
+UI\Dialogs_NPC.lua	Это игрок! Используйте HP Игрока.	errors.is_player_use_player_hp
+UI\Dialogs_NPC.lua	Это NPC! Используйте HP NPC.	errors.is_npc_use_npc_hp
+UI\Dialogs_NPC.lua	Введите корректное значение!	errors.invalid_value
+UI\Dialogs_NPC.lua	Введите корректные значения!	errors.invalid_values
+UI\Dialogs_NPC.lua	Атака НПЦ	ui.npcdlg.attack_action
+UI\Dialogs_NPC.lua	Стойкость	stats.fortitude.label
+UI\Dialogs_NPC.lua	Сноровка	stats.reflex.label
+UI\Dialogs_NPC.lua	Воля	stats.will.label
+UI\Dialogs_NPC.lua	Гибрид	ui.dlg.hybrid
+UI\Dialogs_NPC.lua	Нет	ui.common.none
+UI\Dialogs_NPC.lua	Оглушение	effects.stun.name
+UI\Dialogs_NPC.lua	Ослабл. урона	ui.npcdlg.debuff_weakness_damage
+UI\Dialogs_NPC.lua	Ослабл. лечения	ui.npcdlg.debuff_weakness_healing
+UI\Dialogs_NPC.lua	Уязв. (Стойк.)	ui.npcdlg.debuff_vuln_fortitude
+UI\Dialogs_NPC.lua	Уязв. (Снор.)	ui.npcdlg.debuff_vuln_reflex
+UI\Dialogs_NPC.lua	Уязв. (Воля)	ui.npcdlg.debuff_vuln_will
+UI\Dialogs_NPC.lua	Период. урон	ui.npcdlg.debuff_dot
+UI\Dialogs_NPC.lua	|cFF66CCFFИзменить HP|r	ui.npcdlg.change_hp
+UI\Dialogs_NPC.lua	|cFFA06AF1Сменить роль|r	ui.npcdlg.change_role
+UI\Dialogs_NPC.lua	|cFFFF6666Добавить ранение|r	ui.npcdlg.add_wound
+UI\Dialogs_NPC.lua	|cFF66FF66Снять ранение|r	ui.npcdlg.remove_wound

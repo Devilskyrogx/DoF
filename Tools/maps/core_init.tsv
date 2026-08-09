@@ -1,0 +1,57 @@
+Core\Init.lua	Очистить	core.init.clear
+Core\Init.lua	Оставить	core.init.keep
+Core\Init.lua	Обнаружены данные NPC от прошлой сессии (%s шт.).\nОчистить данные NPC?	core.init.stale_data_confirm
+Core\Init.lua	Данные NPC от прошлой сессии очищены	core.init.stale_data_cleared
+Core\Init.lua	Вы не в группе!	errors.not_in_group
+Core\Init.lua	Данные отправлены	core.init.data_sent
+Core\Init.lua	Запрос отправлен	core.init.request_sent
+Core\Init.lua	|cFFFFD700=== Уровень ABS ===|r	core.init.level_header
+Core\Init.lua	Позиции Unit Frames сброшены	core.init.frames_reset
+Core\Init.lua	Использование: /absrole <игрок> tank|dd|healer|none	core.usage.role
+Core\Init.lua	Роли: tank, dd, healer, none	core.usage.roles_list
+Core\Init.lua	Выберите игрока или укажите имя: /abswound <игрок>	core.usage.wound
+Core\Init.lua	Выберите игрока или укажите имя: /abshealwound <игрок>	core.usage.healwound
+Core\Init.lua	Выберите игрока или укажите имя: /abssetrole <игрок>	core.usage.setrole
+Core\Init.lua	Выберите игрока или укажите имя: /absresetstats <игрок>	core.usage.resetstats
+Core\Init.lua	Выберите игрока или укажите имя: /absgiveenergy <игрок>	core.usage.giveenergy
+Core\Init.lua	Выберите игрока или укажите имя: /absrestoreenergy <игрок>	core.usage.restoreenergy
+Core\Init.lua	Использование: /absaoebuff <effect_id>	core.usage.aoebuff
+Core\Init.lua	Пример: /absaoebuff empower_strength	core.usage.aoebuff_example
+Core\Init.lua	Нет цели!	errors.no_target
+Core\Init.lua	Нельзя для игроков!	errors.not_for_players
+Core\Init.lua	Использование: /abshp [текущий/макс]	core.usage.hp
+Core\Init.lua	Использование: /absattack str|dex|int	core.usage.attack
+Core\Init.lua	Использование: /abscheck str|dex|int|spi	core.usage.check
+Core\Init.lua	Использование: /absaoeattack str|dex|int	core.usage.aoeattack
+Core\Init.lua	Использование: /abscombat add <имя>	core.usage.combat_add
+Core\Init.lua	Использование: /abscombat remove <имя>	core.usage.combat_remove
+Core\Init.lua	Использование: /abscombat free <имя>	core.usage.combat_free
+Core\Init.lua	Использование: /abssethp <число>	core.usage.sethp
+Core\Init.lua	Выберите цель!	errors.select_target
+Core\Init.lua	Нельзя задать HP игроку! Используйте /absmodifyplayerhp	errors.cannot_set_player_hp
+Core\Init.lua	Использование: /absdefense <стойк> <снор> <воля>	core.usage.defense
+Core\Init.lua	Нельзя задать защиту игроку!	errors.cannot_set_player_defense
+Core\Init.lua	Использование: /absmodifynpchp +число или -число	core.usage.modifynpchp
+Core\Init.lua	Это игрок! Используйте /absmodifyplayerhp	errors.is_player_use_modify
+Core\Init.lua	Нет цели! Выберите цель для подстановки %t	errors.no_target_for_t
+Core\Init.lua	Использование: /absnpcattack <игрок|%%t> <урон|мин-макс> <порог> <защита> [дебафф] [значение] [раунды]	core.usage.npcattack
+Core\Init.lua	Пример: /absnpcattack %%t 5-10 12 Fort	core.usage.npcattack_example
+Core\Init.lua	С дебаффом: /absnpcattack %%t 5-10 12 Fort stun 0 2	core.usage.npcattack_debuff
+Core\Init.lua	Защита: Fort(F), Ref(R), Will(W), Hybrid(H)	core.usage.npcattack_defense
+Core\Init.lua	Использование: /absmodifyplayerhp <игрок|%%t> +число или -число	core.usage.modifyplayerhp
+Core\Init.lua	Использование: /absgiveshield <игрок>	core.usage.giveshield
+Core\Init.lua	Использование: /absbuff <игрок|%%t> <эффект> [значение] [раунды]	core.usage.buff
+Core\Init.lua	Эффекты: empower, fortify_fortitude, fortify_reflex, fortify_will, regeneration, blessing	core.usage.buff_effects
+Core\Init.lua	Использование: /absdebuff <игрок|%%t> <эффект> [значение] [раунды]	core.usage.debuff
+Core\Init.lua	Эффекты: stun, weakness_damage, weakness_healing, vulnerability_fortitude, vulnerability_reflex, vulnerability_will, dot_master	core.usage.debuff_effects
+Core\Init.lua	Использование: /absnpceffect <эффект> [значение] [раунды]	core.usage.npceffect
+Core\Init.lua	Эффекты: stun, weakness_fortitude, weakness_reflex, weakness_will, bleeding	core.usage.npceffect_effects
+Core\Init.lua	Выберите НПЦ в качестве цели!	errors.select_npc_as_target
+Core\Init.lua	Цель не является НПЦ в системе ABS!	errors.target_not_abs_npc
+Core\Init.lua	Мастер	combat.label.gm
+Core\Init.lua	НПЦ	combat.npc_fallback
+Core\Init.lua	Система пошагового боя для RP	core.init.about_tagline
+Core\Init.lua	Запрос версий отправлен...	core.init.version_request_sent
+Core\Init.lua	|cFFFFD700[ABS]|r |cFF66CCFF=== Версии аддона ===|r	core.init.versions_header
+Core\Init.lua	ВКЛ	core.init.on
+Core\Init.lua	ВЫКЛ	core.init.off

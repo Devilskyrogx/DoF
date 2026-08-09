@@ -1,0 +1,59 @@
+UI\Dialogs_Effects.lua	Только мастер может использовать эту функцию	errors.gm_only_function
+UI\Dialogs_Effects.lua	Значение должно быть больше 0	errors.value_must_be_positive
+UI\Dialogs_Effects.lua	Длительность должна быть больше 0	errors.duration_must_be_positive
+UI\Dialogs_Effects.lua	Выберите тип ослабления	errors.select_weaken_type
+UI\Dialogs_Effects.lua	NPC не найден!	errors.npc_not_found
+UI\Dialogs_Effects.lua	NPC больше не существует!	errors.npc_no_longer_exists
+UI\Dialogs_Effects.lua	Значение:	ui.dlg.value_label
+UI\Dialogs_Effects.lua	Раундов:	ui.dlg.rounds_label
+UI\Dialogs_Effects.lua	Штраф (-N):	ui.dlg.penalty_label
+UI\Dialogs_Effects.lua	Ослабить защиту:	ui.dlg.weaken_defense_label
+UI\Dialogs_Effects.lua	Снизить:	ui.dlg.reduce_label
+UI\Dialogs_Effects.lua	Защитный стат:	ui.dlg.defense_stat_label
+UI\Dialogs_Effects.lua	Применить	ui.common.apply
+UI\Dialogs_Effects.lua	Отмена	ui.common.cancel
+UI\Dialogs_Effects.lua	Наложить бафф	ui.dlg.apply_buff_title
+UI\Dialogs_Effects.lua	Ослабление	ui.action.weaken
+UI\Dialogs_Effects.lua	Уязвимость	ui.dlg.vulnerability_title
+UI\Dialogs_Effects.lua	Ослабить защиту	ui.dlg.weaken_defense_title
+UI\Dialogs_Effects.lua	-1..3 на 3 раунда, 1 энергия	ui.dlg.weaken_hint
+UI\Dialogs_Effects.lua	Особое действие одобрено	ui.dlg.special_approved
+UI\Dialogs_Effects.lua	Бросить кубик!	ui.dlg.roll_dice
+UI\Dialogs_Effects.lua	|cFFFFFFFFБросить кубик!|r	ui.dlg.roll_dice_colored
+UI\Dialogs_Effects.lua	|cFF00FF00Без броска (автоуспех)|r	ui.dlg.no_roll
+UI\Dialogs_Effects.lua	|cFFFFFFFFВыполнить действие!|r	ui.dlg.perform_action
+UI\Dialogs_Effects.lua	На цели нет баффов!	ui.dlg.no_buffs
+UI\Dialogs_Effects.lua	На цели нет дебаффов!	ui.dlg.no_debuffs
+UI\Dialogs_Effects.lua	Не снимаемая	ui.dlg.unpurgeable
+UI\Dialogs_Effects.lua	Снимаемая	ui.dlg.purgeable
+UI\Dialogs_Effects.lua	|cFFFF4444Не снимаемая|r	ui.dlg.unpurgeable_colored
+UI\Dialogs_Effects.lua	|cFF66FF66Снимаемая|r	ui.dlg.purgeable_colored
+UI\Dialogs_Effects.lua	|cFFFF6600ВКЛ|r	ui.dlg.on
+UI\Dialogs_Effects.lua	|cFF888888ВЫКЛ|r	ui.dlg.off
+UI\Dialogs_Effects.lua	Гарантир.	ui.dlg.mode_guaranteed
+UI\Dialogs_Effects.lua	Шанс	ui.dlg.mode_chance
+UI\Dialogs_Effects.lua	Гибрид	ui.dlg.hybrid
+UI\Dialogs_Effects.lua	Стойкость	stats.fortitude.label
+UI\Dialogs_Effects.lua	Сноровка	stats.reflex.label
+UI\Dialogs_Effects.lua	Воля	stats.will.label
+UI\Dialogs_Effects.lua	Урон	ui.common.damage
+UI\Dialogs_Effects.lua	Усиление (Сила)	ui.buff.empower_strength.name
+UI\Dialogs_Effects.lua	+2 к Силе	ui.buff.empower_strength.desc
+UI\Dialogs_Effects.lua	Усиление (Ловк.)	ui.buff.empower_dexterity.name
+UI\Dialogs_Effects.lua	+2 к Ловкости	ui.buff.empower_dexterity.desc
+UI\Dialogs_Effects.lua	Усиление (Инт.)	ui.buff.empower_intelligence.name
+UI\Dialogs_Effects.lua	+2 к Интеллекту	ui.buff.empower_intelligence.desc
+UI\Dialogs_Effects.lua	Усиление (Дух)	ui.buff.empower_spirit.name
+UI\Dialogs_Effects.lua	+2 к Духу	ui.buff.empower_spirit.desc
+UI\Dialogs_Effects.lua	Усиление (Урон)	ui.buff.empower_damage.name
+UI\Dialogs_Effects.lua	+1 к Урону	ui.buff.empower_damage.desc
+UI\Dialogs_Effects.lua	Усиление (Исц.)	ui.buff.empower_healing.name
+UI\Dialogs_Effects.lua	+1 к Исцелению	ui.buff.empower_healing.desc
+UI\Dialogs_Effects.lua	Укрепление (Стойк.)	ui.buff.fortify_fortitude.name
+UI\Dialogs_Effects.lua	+2 к Стойкости	ui.buff.fortify_fortitude.desc
+UI\Dialogs_Effects.lua	Укрепление (Снор.)	ui.buff.fortify_reflex.name
+UI\Dialogs_Effects.lua	+2 к Сноровке	ui.buff.fortify_reflex.desc
+UI\Dialogs_Effects.lua	Укрепление (Воля)	ui.buff.fortify_will.name
+UI\Dialogs_Effects.lua	+2 к Воле	ui.buff.fortify_will.desc
+UI\Dialogs_Effects.lua	Укрепление (HP)	ui.buff.fortify_hp.name
+UI\Dialogs_Effects.lua	+2 к макс. HP	ui.buff.fortify_hp.desc

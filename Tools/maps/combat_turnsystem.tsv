@@ -1,0 +1,26 @@
+Combat\TurnSystem.lua	Только мастер может начать бой!	errors.gm_only_start_combat
+Combat\TurnSystem.lua	Только мастер может окончить бой!	errors.gm_only_end_combat
+Combat\TurnSystem.lua	Только мастер может переключить фазу!	errors.gm_only_phase
+Combat\TurnSystem.lua	Только мастер может пропустить ход!	errors.gm_only_skip_turn
+Combat\TurnSystem.lua	Только мастер может пропустить игрока!	errors.gm_only_skip_player
+Combat\TurnSystem.lua	Только мастер может добавлять участников!	errors.gm_only_add_participant
+Combat\TurnSystem.lua	Только мастер может удалять участников!	errors.gm_only_remove_participant
+Combat\TurnSystem.lua	Только мастер может давать внеочередной ход!	errors.gm_only_extra_turn
+Combat\TurnSystem.lua	Нет участников для боя!	errors.no_participants
+Combat\TurnSystem.lua	Вы оглушены! Ход будет пропущен автоматически.	errors.you_are_stunned
+Combat\TurnSystem.lua	Сейчас не ваш ход!	errors.not_your_turn
+Combat\TurnSystem.lua	Сначала выберите крит-бонус!	errors.choose_crit_bonus_first
+Combat\TurnSystem.lua	Оглушение	effects.stun.name
+Combat\TurnSystem.lua	Все участники небоеспособны — переход к фазе NPC	combat.turn.all_incapacitated
+Combat\TurnSystem.lua	Все участники оглушены — переход к фазе NPC	combat.turn.all_stunned
+Combat\TurnSystem.lua	Вы без сознания — ход пропущен. Ждите решения мастера.	combat.turn.you_unconscious
+Combat\TurnSystem.lua	Усталость лечения полностью снята!	combat.turn.fatigue_cleared
+Combat\TurnSystem_Sync.lua	неизвестный игрок	combat.turn.unknown_player
+Combat\TurnSystem_Sync.lua	|cFFFFD700Вы назначили себе внеочередной ход.|r Выполните действие.	combat.turn.extra_turn_self
+Combat\TurnSystem_Sync.lua	|cFFFFD700Вам дан внеочередной ход!|r Выполните действие.	combat.turn.extra_turn_you
+Sync\Security.lua	не в группе	combat.sec.not_in_group
+Sync\Security.lua	не является мастером	combat.sec.not_master
+Sync\Security.lua	|cFFFFFFFFПодтвердить|r	combat.sec.confirm
+Sync\Security.lua	|cFFFFFFFFОтклонить|r	combat.sec.decline
+Sync\Security.lua	Действие отклонено	combat.sec.declined
+Sync\Security.lua	Время на подтверждение истекло — действие отклонено	combat.sec.timeout

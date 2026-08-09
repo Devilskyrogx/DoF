@@ -1,0 +1,65 @@
+Core\Config.lua	Простой бросок	core.action.simple_roll
+Core\Config.lua	Бафф	core.action.buff
+Core\Config.lua	АоЕ Бафф	core.action.aoe_buff
+Core\Config.lua	Атака	core.action.attack
+Core\Config.lua	АоЕ Атака	core.action.aoe_attack
+Core\Config.lua	Снятие раны	core.action.wound_removal
+Core\Config.lua	Диспел	core.action.dispel
+Core\Config.lua	Пурж	core.action.purge
+Core\Config.lua	Танк	roles.tank.name
+Core\Config.lua	Боец	roles.dd.name
+Core\Config.lua	Целитель	roles.healer.name
+Core\Config.lua	Высокая выживаемость. HP = Базовое + Стойкость/2. Ниже среднего урон и исцеление. Серия из 2 успешных защит даёт +1 к стату защиты (до +3). Неудача сбрасывает бафф проваленного стата. Серия из 2 подряд успешных атак по одной цели срезает защиту врага на 2 (до -6). Перехват урона союзника (раз в 2 хода). Провокация (1 энергия, раз в 2 хода). АоЕ провокация (2 энергии, раз в 3 хода).	roles.tank.desc
+Core\Config.lua	Повышенный урон в бою. Ниже среднего исцеление. 15% шанс контратаки при успешной защите. Крит защиты: +3 к урону контратаки.	roles.dd.desc
+Core\Config.lua	Усиленное исцеление, снятие ран. Ниже среднего урон. Щит (поглощает 1 удар, кд 2 хода). AoE щит (до 4 целей, 2 энергии, кд 3 хода).	roles.healer.desc
+Core\Config.lua	Сила	stats.strength.label
+Core\Config.lua	Ловкость	stats.dexterity.label
+Core\Config.lua	Интеллект	stats.intelligence.label
+Core\Config.lua	Дух	stats.spirit.label
+Core\Config.lua	Стойкость	stats.fortitude.label
+Core\Config.lua	Сноровка	stats.reflex.label
+Core\Config.lua	Воля	stats.will.label
+Core\Utils.lua	Нет цели!	errors.no_target
+Core\Utils.lua	Нельзя для игроков!	errors.not_for_players
+Core\Utils.lua	Только ведущий может это делать!	errors.gm_only_action
+Core\Utils.lua	Сейчас не ваш ход!	errors.not_your_turn
+Core\Utils.lua	Масштаб UI сброшен на автоматический	core.util.ui_scale_reset
+Data\Units.lua	Имя НПЦ не может содержать символы ; или :	errors.npc_name_invalid
+Data\Units.lua	Очистил базу всех NPC	core.units.cleared_log
+Data\Units.lua	База NPC очищена	core.units.cleared
+Data\Units.lua	Удалить ВСЕ данные о NPC?	core.units.clear_confirm
+Data\Units.lua	Да	ui.common.yes
+Data\Units.lua	Нет	ui.common.no
+Data\Units.lua	|cFFFF0000Мёртв|r	core.units.dead
+Data\Units.lua	Список пуст	core.units.list_empty
+Core\Aliases.lua	Изменение HP заблокировано! Обратитесь к ведущему.	errors.hp_change_blocked
+Core\Aliases.lua	Нет цели!	errors.no_target
+Core\Aliases.lua	Без ведущего в очереди	xml.queue_no_leader
+Core\Aliases.lua	С ведущим в очереди	core.alias.queue_with_leader
+Core\Aliases.lua	Бой не начат!	errors.combat_not_started
+Core\Aliases.lua	Внеочередной ход отменён.	core.alias.extra_turn_cancelled
+Core\Aliases.lua	Выберите игрока!	errors.select_player
+Core\Aliases.lua	Цель должна быть игроком!	errors.target_must_be_player
+Core\Aliases.lua	Выберите цель!	errors.select_target
+Data\Stats.lua	Характеристики сброшены из-за недостатка очков!	core.stats.reset_low_points
+Data\Stats.lua	Роль сброшена	core.stats.role_reset
+Data\Stats.lua	Нет	ui.common.none
+Data\Stats.lua	Вы уже в критическом состоянии! Судьба решается мастером.	core.stats.already_critical
+Data\Stats.lua	КРИТИЧЕСКОЕ РАНЕНИЕ! Вы без сознания. Судьбу решает мастер.	core.stats.critical_wound
+Data\Stats.lua	Нет ранений для снятия	core.stats.no_wounds
+Data\Stats.lua	Ранение исцелено!	core.stats.wound_healed
+Data\Stats.lua	Все ранения исцелены!	core.stats.all_wounds_healed
+Data\Stats.lua	Щит уже активен!	combat.shield_already_active
+Data\Stats.lua	Щит недавно разрушен! Дождитесь окончания эффекта.	errors.shield_recently_broken
+Data\Stats.lua	Щит разрушен!	core.stats.shield_broken
+Data\Stats.lua	Недостаточно очков!	errors.not_enough_points
+Data\Stats.lua	Характеристика не может быть отрицательной!	errors.stat_negative
+Data\Stats.lua	Характеристика уже на минимуме!	errors.stat_at_minimum
+Data\Stats.lua	Нельзя снять распределённые очки!	errors.cannot_remove_points
+Data\Stats.lua	Характеристики распределены!	core.stats.distributed
+Data\Stats.lua	Характеристики сброшены	core.stats.reset
+Data\Stats.lua	Персонаж полностью сброшен	core.stats.full_reset
+Data\Stats.lua	|cFFFFD700=== ABS Персонаж ===|r	core.stats.sheet_header
+Data\Stats.lua	|cFFFF0000КРИТИЧЕСКОЕ РАНЕНИЕ|r (без сознания, судьбу решает мастер)	core.stats.sheet_critical
+Data\Stats.lua	%s изменил здоровье: %d → %d (%+d)	core.stats.hp_change_log
+Data\Stats.lua	Недостаточно энергии!	errors.not_enough_energy
