@@ -29,6 +29,11 @@ Libs\AceTimer-3.0\AceTimer-3.0.xml
 Libs\AceSerializer-3.0\AceSerializer-3.0.xml
 Libs\AceComm-3.0\AceComm-3.0.xml
 
+# Кнопка на миникарте. Без этих двух UI\MinimapButton.lua молча выходит
+# из CreateMinimapButton и кнопка не появляется вовсе.
+Libs\LibDataBroker-1.1\LibDataBroker-1.1.lua
+Libs\LibDBIcon-1.0\lib.xml
+
 # ═══════════════════════════════════════════════════════════
 # ЛОКАЛИЗАЦИЯ (до данных и интерфейса!)
 # ═══════════════════════════════════════════════════════════
